@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import authRoutes from "./routes/auth.js";
 
 const app = express();
 
@@ -9,6 +10,7 @@ app.use(
   }),
 );
 app.use(express.json());
+app.use("/api/auth", authRoutes);
 
 app.get("/api/health", (_request, response) => {
   response.json({ status: "ok" });

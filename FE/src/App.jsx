@@ -1,30 +1,47 @@
 import { useEffect, useState } from "react";
-
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import Home from "./components/Home.jsx";
+import Login from "./components/Login.jsx";
+import Signin from "./components/Signin.jsx";
+import { authRequest, tokenKey } from "./services/authApi.js";
 
 function App() {
-  const [message, setMessage] = useState("Loading server message...");
-  const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
+  const [page, setPage] = useState("login");
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    fetch(`${apiUrl}/api/message`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("The server returned an error.");
-        }
-        return response.json();
-      })
-      .then((data) => setMessage(data.message))
-      .catch(() => {
-        setError("Could not connect to the Express server.");
-      });
+    const token = localStorage.getItem(tokenKey);
+
+    if (!token) {
+      setCheckingAuth(false);
+      return;
+    }
+
+    authRequest("/api/auth/me", { token })
+      .then((data) => setUser(data.user))
+      .catch(() => localStorage.removeItem(tokenKey))
+      .finally(() => setCheckingAuth(false));
   }, []);
+
+  function logout() {
+    localStorage.removeItem(tokenKey);
+    setUser(null);
+    setPage("login");
+  }
+
+  if (checkingAuth) {
+    return <main><p>Checking your session...</p></main>;
+  }
 
   return (
     <main>
-      <h1>VulnFlow</h1>
-      <p>Bug bounty platform demo</p>
-      <p>{error || message}</p>
+      {user ? (
+        <Home user={user} onLogout={logout} />
+      ) : page === "login" ? (
+        <Login onAuthenticated={setUser} onSwitch={() => setPage("signin")} />
+      ) : (
+        <Signin onAuthenticated={setUser} onSwitch={() => setPage("login")} />
+      )}
     </main>
   );
 }
