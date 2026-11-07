@@ -1,0 +1,23 @@
+:root {
+  font-family: Arial, sans-serif;
+  color: #172033;
+  background: #f4f7fb;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 720px;
+  margin: 20vh auto;
+  padding: 2rem;
+  text-align: center;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgb(23 32 51 / 12%);
+}
+
+h1 {
+  margin-bottom: 0.5rem;
+}

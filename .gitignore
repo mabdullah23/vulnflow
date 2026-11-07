@@ -70,6 +70,11 @@ web_modules/
 .env.*
 !.env.example
 
+# Local environment files
+**/.env
+**/.env.*
+!**/.env.example
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
@@ -147,3 +152,6 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Frontend build output
+FE/dist/
