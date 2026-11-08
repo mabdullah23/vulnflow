@@ -31,7 +31,6 @@ export async function signup(request, response) {
       name: username.trim(),
       email: normalizedEmail,
       password: hashedPassword,
-      profilePicture: "",
     });
 
     return response.status(201).json({

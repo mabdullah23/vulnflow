@@ -39,7 +39,7 @@ function App() {
   function renderPage() {
     const pages = {
       home: <Home user={user} />,
-      profile: <Profile user={user} />,
+      profile: <Profile user={user} onUpdated={setUser} />,
       reports: <Reports />,
       projects: <Projects />,
       explore: <ExploreProjects />,

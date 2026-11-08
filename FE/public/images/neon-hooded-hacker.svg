@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title>Neon Hooded Hacker Emblem</title>
+  <rect width="240" height="240" rx="120" fill="#172033"/>
+  <path d="M46 183c5-67 29-112 74-127 45 15 69 60 74 127H46Z" fill="#0b1220" stroke="#38e8ff" stroke-width="6"/>
+  <path d="M68 127c10-25 27-37 52-37s42 12 52 37c-16 20-34 30-52 30s-36-10-52-30Z" fill="#172033" stroke="#b65cff" stroke-width="5"/>
+  <path d="M88 126h22m20 0h22" stroke="#38e8ff" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="99" cy="126" r="5" fill="#fff"/><circle cx="141" cy="126" r="5" fill="#fff"/>
+  <path d="M84 178h72" stroke="#b65cff" stroke-width="6" stroke-linecap="round"/>
+</svg>

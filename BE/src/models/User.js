@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+const defaultProfilePicture = `${process.env.CLIENT_URL || "http://localhost:5173"}/images/neon-hooded-hacker.svg`;
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -19,7 +21,7 @@ const userSchema = new mongoose.Schema({
   },
   profilePicture: {
     type: String,
-    default: "",
+    default: defaultProfilePicture,
   },
   createdAt: {
     type: Date,

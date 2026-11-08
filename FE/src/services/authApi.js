@@ -6,7 +6,9 @@ export async function authRequest(path, options = {}) {
   const { token, ...fetchOptions } = options;
   const response = await fetch(`${apiUrl}${path}`, {
     headers: {
-      "Content-Type": "application/json",
+      ...(fetchOptions.body instanceof FormData
+        ? {}
+        : { "Content-Type": "application/json" }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     ...fetchOptions,
