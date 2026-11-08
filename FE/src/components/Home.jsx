@@ -1,9 +1,9 @@
-function Home({ user, onLogout }) {
+function Home({ user }) {
   return (
-    <section className="card home">
+    <section className="page-card home">
       <h1>Hello: {user.name}</h1>
       <p>Welcome to your VulnFlow home page.</p>
-      <button type="button" onClick={onLogout}>Log out</button>
+      <p>Use the navigation to manage your reports and projects.</p>
     </section>
   );
 }

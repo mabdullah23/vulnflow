@@ -9,12 +9,148 @@ body {
 }
 
 main {
-  max-width: 420px;
-  margin: 10vh auto;
+  min-height: 100vh;
+}
+
+main > p {
+  padding: 2rem;
+  text-align: center;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: #f4f7fb;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 5%;
+  color: white;
+  background: #172033;
+}
+
+.brand,
+.menu-toggle,
+.nav-link,
+.nav-logout {
+  padding: 0.5rem;
+  border: 0;
+  color: inherit;
+  background: transparent;
+}
+
+.brand {
+  font-size: 1.25rem;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-link {
+  font-size: 0.9rem;
+}
+
+.nav-link-active {
+  color: #8db4ff;
+}
+
+.nav-logout {
+  margin-left: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  background: #b42318;
+}
+
+.menu-toggle {
+  display: none;
+  font-size: 1.25rem;
+}
+
+.page-card {
+  max-width: 1000px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgb(23 32 51 / 12%);
+}
+
+.page-card > p {
+  color: #596579;
+}
+
+.detail-list {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.item-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.list-item,
+.explore-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   padding: 1rem;
+  border: 1px solid #e1e6ef;
+  border-radius: 8px;
+}
+
+.list-item h2,
+.explore-item h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.list-item p,
+.explore-item p {
+  margin-bottom: 0;
+  color: #596579;
+}
+
+.badge {
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-high {
+  color: #b42318;
+  background: #fee4e2;
+}
+
+.badge-medium {
+  color: #93370d;
+  background: #fef0c7;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.explore-item {
+  display: block;
 }
 
 .card {
+  max-width: 420px;
+  margin: 10vh auto;
   padding: 2rem;
   text-align: center;
   background: white;
@@ -87,4 +223,46 @@ button:disabled {
 
 .home {
   padding: 3rem 2rem;
+}
+
+@media (max-width: 760px) {
+  .navbar {
+    flex-wrap: wrap;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nav-links-open {
+    display: flex;
+  }
+
+  .nav-link,
+  .nav-logout {
+    width: 100%;
+    margin: 0;
+    text-align: left;
+  }
+
+  .page-card {
+    margin: 1.5rem 1rem;
+    padding: 1.5rem;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-list {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
 }
