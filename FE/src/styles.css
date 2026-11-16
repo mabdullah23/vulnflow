@@ -214,6 +214,20 @@ input {
   font: inherit;
 }
 
+textarea,
+select {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid #cbd3df;
+  border-radius: 6px;
+  font: inherit;
+}
+
+textarea {
+  resize: vertical;
+}
+
 button {
   padding: 0.75rem 1rem;
   border: 0;
@@ -238,6 +252,103 @@ button:disabled {
 .switch {
   margin-bottom: 0;
   color: #596579;
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-heading h1,
+.page-heading h2 {
+  margin-top: 0;
+}
+
+.add-button {
+  white-space: nowrap;
+}
+
+.secondary-button,
+.back-button {
+  color: #2457d6;
+  background: #e9efff;
+}
+
+.back-button {
+  margin-bottom: 1.5rem;
+}
+
+.project-form {
+  max-width: 700px;
+}
+
+.form-note {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem;
+  color: #2457d6;
+  background: #eef3ff;
+  border-radius: 6px;
+}
+
+.form-note span,
+.muted,
+.empty-state {
+  color: #596579;
+}
+
+.project-item,
+.submission-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem;
+  color: #172033;
+  text-align: left;
+  background: white;
+  border: 1px solid #e1e6ef;
+}
+
+.project-item:hover,
+.submission-item:hover {
+  border-color: #2457d6;
+}
+
+.project-item span:first-child,
+.submission-item span:first-child {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.project-item small,
+.submission-item small {
+  color: #596579;
+}
+
+.bounty {
+  color: #067647;
+  font-weight: 700;
+}
+
+.program-meta {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0.8rem 1rem;
+  margin: 2rem 0;
+}
+
+.section-title {
+  margin-top: 2rem;
+}
+
+.submission-detail {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f4f7fb;
+  border-radius: 8px;
 }
 
 .link-button {
@@ -289,5 +400,14 @@ button:disabled {
   .detail-list {
     grid-template-columns: 1fr;
     gap: 0.35rem;
+  }
+
+  .page-heading {
+    flex-direction: column;
+  }
+
+  .program-meta {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
   }
 }

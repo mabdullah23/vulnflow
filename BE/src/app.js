@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import multer from "multer";
 import authRoutes from "./routes/auth.js";
+import projectRoutes from "./routes/projects.js";
 import profileRoutes from "./routes/profile.js";
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/projects", projectRoutes);
 
 app.get("/api/health", (_request, response) => {
   response.json({ status: "ok" });

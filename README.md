@@ -46,6 +46,10 @@ Passwords are hashed with bcrypt. The frontend stores the JWT locally for this d
 
 The authenticated `PATCH /api/profile` endpoint accepts a multipart form field named `profileImage`, uploads it to the Supabase `profile-images` bucket, and stores the public image URL in MongoDB. The bucket must be configured as public for the returned URL to display. Images are limited to 5 MB and support JPEG, PNG, WebP, and GIF.
 
+## Security programs
+
+The **My Projects** page supports creating programs for Web Application, API, Cloud, Network, and Source Code security. Mobile testing is intentionally not included yet because file uploads such as APK/IPA are not supported. Each program stores a domain-specific scope, description, and bounty amount. Opening a program shows dummy submissions and details; submission file uploads are not enabled yet.
+
 ## Environment variables
 
 Local `BE/.env` and `FE/.env` files are ignored by Git. Copy the corresponding `.env.example` files when setting up a new machine, then set `MONGODB_URI` in `BE/.env`. Never commit credentials or paste them into tracked files.
