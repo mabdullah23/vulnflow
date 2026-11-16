@@ -171,6 +171,22 @@ main > p {
 
 .explore-item {
   display: block;
+  width: 100%;
+  color: #172033;
+  text-align: left;
+  background: white;
+  cursor: pointer;
+}
+
+.explore-item:hover {
+  border-color: #2457d6;
+}
+
+.project-submissions-placeholder {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f4f7fb;
+  border-radius: 8px;
 }
 
 .card {

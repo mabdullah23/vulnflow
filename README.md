@@ -48,7 +48,7 @@ The authenticated `PATCH /api/profile` endpoint accepts a multipart form field n
 
 ## Security programs
 
-The **My Projects** page supports creating programs for Web Application, API, Cloud, Network, and Source Code security. Mobile testing is intentionally not included yet because file uploads such as APK/IPA are not supported. Each program stores a domain-specific scope, description, and bounty amount. Opening a program shows dummy submissions and details; submission file uploads are not enabled yet.
+The **My Projects** page supports creating programs for Web Application, API, Cloud, Network, and Source Code security. Mobile testing is intentionally not included yet because file uploads such as APK/IPA are not supported. Each program stores a domain-specific scope, description, and bounty amount. Bug hunters can browse all available projects from **Explore Projects** and open their details. Submission functionality is not enabled yet.
 
 ## Environment variables
 

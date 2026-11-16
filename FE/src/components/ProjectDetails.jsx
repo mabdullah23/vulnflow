@@ -3,7 +3,6 @@ import { authRequest, tokenKey } from "../services/authApi.js";
 
 function ProjectDetails({ projectId, onBack }) {
   const [details, setDetails] = useState(null);
-  const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -22,7 +21,7 @@ function ProjectDetails({ projectId, onBack }) {
     return <section className="page-card"><p>Loading project...</p></section>;
   }
 
-  const { project, submissions } = details;
+  const { project } = details;
 
   return (
     <section className="page-card">
@@ -38,30 +37,9 @@ function ProjectDetails({ projectId, onBack }) {
         <strong>Domain</strong><span>{project.domainLabel}</span>
         <strong>Scope</strong><span>{project.scope}</span>
       </div>
-      <h2 className="section-title">Submissions</h2>
-      <p className="muted">These are dummy submissions for now. File attachments are not enabled.</p>
-      <div className="item-list">
-        {submissions.map((submission) => (
-          <button className="submission-item" type="button" key={submission.id} onClick={() => setSelectedSubmission(submission)}>
-            <span><strong>{submission.title}</strong><small>{submission.researcher}</small></span>
-            <span className={`badge badge-${submission.severity.toLowerCase()}`}>{submission.severity}</span>
-          </button>
-        ))}
+      <div className="empty-state project-submissions-placeholder">
+        Submissions will be available in a future update.
       </div>
-      {selectedSubmission && (
-        <div className="submission-detail">
-          <div className="page-heading">
-            <h2>{selectedSubmission.title}</h2>
-            <button className="secondary-button" type="button" onClick={() => setSelectedSubmission(null)}>Close</button>
-          </div>
-          <p>{selectedSubmission.description}</p>
-          <div className="program-meta">
-            <strong>Researcher</strong><span>{selectedSubmission.researcher}</span>
-            <strong>Status</strong><span>{selectedSubmission.status}</span>
-            <strong>Submitted</strong><span>{selectedSubmission.submittedAt}</span>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

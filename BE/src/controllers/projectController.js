@@ -8,29 +8,6 @@ const scopeLabels = {
   "source-code": "Source code repository URL",
 };
 
-const dummySubmissions = [
-  {
-    id: "submission-demo-1",
-    title: "Reflected XSS in search parameter",
-    researcher: "Demo Researcher",
-    severity: "High",
-    status: "New",
-    description:
-      "A harmless demo submission showing where vulnerability details will appear.",
-    submittedAt: "2026-11-10",
-  },
-  {
-    id: "submission-demo-2",
-    title: "Missing rate limiting on login",
-    researcher: "Security Student",
-    severity: "Medium",
-    status: "Triaged",
-    description:
-      "Dummy submission data for the project review flow. No files are attached.",
-    submittedAt: "2026-11-12",
-  },
-];
-
 function projectResponse(project) {
   return {
     id: project._id,
@@ -97,21 +74,25 @@ export async function getMyProjects(request, response) {
   }
 }
 
+export async function getAllProjects(_request, response) {
+  try {
+    const projects = await Project.find().sort({ createdAt: -1 });
+    return response.json({ projects: projects.map(projectResponse) });
+  } catch (error) {
+    console.error("Explore projects list failed:", error.message);
+    return response.status(500).json({ message: "Could not load projects." });
+  }
+}
+
 export async function getProjectDetails(request, response) {
   try {
-    const project = await Project.findOne({
-      _id: request.params.projectId,
-      owner: request.user._id,
-    });
+    const project = await Project.findById(request.params.projectId);
 
     if (!project) {
       return response.status(404).json({ message: "Project not found." });
     }
 
-    return response.json({
-      project: projectResponse(project),
-      submissions: dummySubmissions,
-    });
+    return response.json({ project: projectResponse(project) });
   } catch (error) {
     console.error("Project details failed:", error.message);
     return response.status(500).json({ message: "Could not load project details." });
