@@ -9,11 +9,10 @@ FE/  React + Vite frontend
      src/components/  Login, Signin, and Home screens
      src/services/    Frontend API services
 BE/  Express backend
-     src/controllers/ Authentication request handlers
-     src/routes/      API route definitions
+     src/routes/      Complete API areas: auth, profile, projects, submissions
      src/models/      Mongoose schemas
-     src/middleware/  Authentication middleware
-     src/utils/       Shared backend helpers
+     src/middleware/  Authentication and upload middleware
+     src/config/      MongoDB and Supabase configuration
 ```
 
 ## Run the demo
