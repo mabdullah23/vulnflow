@@ -1,18 +1,49 @@
-import { dummyReports } from "../data/dummyData.js";
+import { useEffect, useState } from "react";
+import { authRequest, tokenKey } from "../services/authApi.js";
 
 function Reports() {
+  const [reports, setReports] = useState([]);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    authRequest("/api/submissions/mine", {
+      token: localStorage.getItem(tokenKey),
+    })
+      .then((data) => setReports(data.submissions))
+      .catch((requestError) => setError(requestError.message));
+  }, []);
+
   return (
     <section className="page-card">
       <h1>My Reports</h1>
-      <p>Dummy vulnerability reports submitted by you.</p>
+      <p>Reports you submitted to bounty programs.</p>
+      {error && <p className="error">{error}</p>}
+      {!error && reports.length === 0 && <p className="empty-state">You have not submitted any reports yet.</p>}
       <div className="item-list">
-        {dummyReports.map((report) => (
-          <article className="list-item" key={report.id}>
-            <div><h2>{report.title}</h2><p>{report.status}</p></div>
-            <span className={`badge badge-${report.severity.toLowerCase()}`}>{report.severity}</span>
-          </article>
+        {reports.map((report) => (
+          <button className="report-item" type="button" key={report.id} onClick={() => setSelectedReport(report)}>
+            <span><strong>{report.title}</strong><small>{report.project?.name || "Project"} · {report.severity}</small></span>
+            <span className={`badge badge-${report.status}`}>{report.status}</span>
+          </button>
         ))}
       </div>
+      {selectedReport && (
+        <article className="submission-detail">
+          <div className="page-heading">
+            <h2>{selectedReport.title}</h2>
+            <button className="secondary-button" type="button" onClick={() => setSelectedReport(null)}>Close</button>
+          </div>
+          <p>{selectedReport.description}</p>
+          <div className="program-meta">
+            <strong>Status</strong><span>{selectedReport.status}</span>
+            <strong>Severity</strong><span>{selectedReport.severity}</span>
+            <strong>Video</strong><a href={selectedReport.videoUrl} target="_blank" rel="noreferrer">View video</a>
+            <strong>PDF</strong><a href={selectedReport.pdfUrl} target="_blank" rel="noreferrer">View PDF</a>
+            <strong>Review note</strong><span>{selectedReport.reviewNote || "No review note yet."}</span>
+          </div>
+        </article>
+      )}
     </section>
   );
 }

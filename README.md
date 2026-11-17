@@ -48,7 +48,11 @@ The authenticated `PATCH /api/profile` endpoint accepts a multipart form field n
 
 ## Security programs
 
-The **My Projects** page supports creating programs for Web Application, API, Cloud, Network, and Source Code security. Mobile testing is intentionally not included yet because file uploads such as APK/IPA are not supported. Each program stores a domain-specific scope, description, and bounty amount. Bug hunters can browse all available projects from **Explore Projects** and open their details. Submission functionality is not enabled yet.
+The **My Projects** page supports creating programs for Web Application, API, Cloud, Network, and Source Code security. Mobile testing is intentionally not included yet because file uploads such as APK/IPA are not supported. Each program stores a domain-specific scope, description, and bounty amount. Bug hunters can browse all available projects from **Explore Projects** and open their details.
+
+## Bounty reports
+
+Bug hunters can submit a report from a project detail page with a title, description, severity, reproduction video, and PDF evidence. Videos are uploaded to the Supabase `report-evidence` bucket and PDFs to `bounty-attachments`. The backend stores each bucket path in MongoDB and creates one-hour signed Supabase URLs when reports are loaded, so the buckets can remain private. Clients are identified as project owners and can view, approve, or reject submissions. Submitted reports appear in **My Reports** with their current status and evidence links. Evidence files are limited to 50 MB each.
 
 ## Environment variables
 

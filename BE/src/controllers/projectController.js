@@ -92,7 +92,14 @@ export async function getProjectDetails(request, response) {
       return response.status(404).json({ message: "Project not found." });
     }
 
-    return response.json({ project: projectResponse(project) });
+    const isOwner = project.owner.toString() === request.user._id.toString();
+    return response.json({
+      project: projectResponse(project),
+      permissions: {
+        canSubmit: !isOwner,
+        canReview: isOwner,
+      },
+    });
   } catch (error) {
     console.error("Project details failed:", error.message);
     return response.status(500).json({ message: "Could not load project details." });

@@ -189,6 +189,80 @@ main > p {
   border-radius: 8px;
 }
 
+.submission-form-panel,
+.submission-review {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e1e6ef;
+}
+
+.review-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e1e6ef;
+  border-radius: 8px;
+}
+
+.review-item h3 {
+  margin: 0;
+}
+
+.review-item p {
+  color: #596579;
+}
+
+.review-item small,
+.report-item small {
+  display: block;
+  color: #596579;
+}
+
+.review-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.report-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem;
+  color: #172033;
+  text-align: left;
+  background: white;
+  border: 1px solid #e1e6ef;
+}
+
+.report-item:hover {
+  border-color: #2457d6;
+}
+
+.badge-pending {
+  color: #93370d;
+  background: #fef0c7;
+}
+
+.badge-approved {
+  color: #067647;
+  background: #d1fadf;
+}
+
+.badge-rejected {
+  color: #b42318;
+  background: #fee4e2;
+}
+
+.danger-button {
+  background: #b42318;
+}
+
 .card {
   max-width: 420px;
   margin: 10vh auto;
@@ -425,5 +499,13 @@ button:disabled {
   .program-meta {
     grid-template-columns: 1fr;
     gap: 0.3rem;
+  }
+
+  .review-item {
+    flex-direction: column;
+  }
+
+  .review-actions {
+    justify-content: flex-start;
   }
 }

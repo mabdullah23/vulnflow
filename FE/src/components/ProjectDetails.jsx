@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import ReportSubmissionForm from "./ReportSubmissionForm.jsx";
+import SubmissionReviewList from "./SubmissionReviewList.jsx";
 import { authRequest, tokenKey } from "../services/authApi.js";
 
 function ProjectDetails({ projectId, onBack }) {
@@ -21,7 +23,7 @@ function ProjectDetails({ projectId, onBack }) {
     return <section className="page-card"><p>Loading project...</p></section>;
   }
 
-  const { project } = details;
+  const { project, permissions } = details;
 
   return (
     <section className="page-card">
@@ -38,8 +40,14 @@ function ProjectDetails({ projectId, onBack }) {
         <strong>Scope</strong><span>{project.scope}</span>
       </div>
       <div className="empty-state project-submissions-placeholder">
-        Submissions will be available in a future update.
+        {permissions.canSubmit
+          ? "Submit a report below when you find a vulnerability."
+          : "Review reports submitted by bug hunters below."}
       </div>
+      {permissions.canSubmit && (
+        <ReportSubmissionForm projectId={projectId} onSubmitted={onBack} />
+      )}
+      {permissions.canReview && <SubmissionReviewList projectId={projectId} />}
     </section>
   );
 }
