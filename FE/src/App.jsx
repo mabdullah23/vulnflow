@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ExploreProjects from "./components/ExploreProjects.jsx";
 import Home from "./components/Home.jsx";
+import Footer from "./components/Footer.jsx";
 import Login from "./components/Login.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Profile from "./components/Profile.jsx";
@@ -38,7 +39,7 @@ function App() {
 
   function renderPage() {
     const pages = {
-      home: <Home user={user} />,
+      home: <Home user={user} onNavigate={setActivePage} />,
       profile: <Profile user={user} onUpdated={setUser} />,
       reports: <Reports />,
       projects: <Projects />,
@@ -52,7 +53,7 @@ function App() {
   }
 
   return (
-    <main>
+    <div>
       {user ? (
         <div className="app-shell">
           <Navbar
@@ -60,14 +61,15 @@ function App() {
             onNavigate={setActivePage}
             onLogout={logout}
           />
-          {renderPage()}
+          <main className="app-content">{renderPage()}</main>
+          <Footer onNavigate={setActivePage} />
         </div>
       ) : page === "login" ? (
-        <Login onAuthenticated={setUser} onSwitch={() => setPage("signin")} />
+        <main><Login onAuthenticated={setUser} onSwitch={() => setPage("signin")} /></main>
       ) : (
-        <Signin onAuthenticated={setUser} onSwitch={() => setPage("login")} />
+        <main><Signin onAuthenticated={setUser} onSwitch={() => setPage("login")} /></main>
       )}
-    </main>
+    </div>
   );
 }
 

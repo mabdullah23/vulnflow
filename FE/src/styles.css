@@ -1,5 +1,5 @@
 :root {
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
   color: #172033;
   background: #f4f7fb;
 }
@@ -18,8 +18,20 @@ main > p {
 }
 
 .app-shell {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  background: #f4f7fb;
+  background: #0c100e;
+}
+
+.app-content {
+  flex: 1;
+  min-height: 0;
+}
+
+.site-header {
+  background: #0c100e;
+  border-bottom: 1px solid #29332d;
 }
 
 .navbar {
@@ -27,9 +39,11 @@ main > p {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 5%;
-  color: white;
-  background: #172033;
+  max-width: 1160px;
+  min-height: 80px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  color: #a7b2ab;
 }
 
 .brand,
@@ -43,7 +57,20 @@ main > p {
 }
 
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0;
+  color: #e5e9e6;
+  font-size: 1.4rem;
+  letter-spacing: -0.06rem;
+}
+
+.brand-mark {
+  color: #a3e67b;
+  font-family: Consolas, "Courier New", monospace;
   font-size: 1.25rem;
+  letter-spacing: 0;
 }
 
 .nav-links {
@@ -53,22 +80,33 @@ main > p {
 }
 
 .nav-link {
-  font-size: 0.9rem;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
+.nav-link:hover,
 .nav-link-active {
-  color: #8db4ff;
+  color: #a3e67b;
+  background: #19221b;
 }
 
 .nav-logout {
   margin-left: 0.5rem;
-  padding: 0.5rem 0.8rem;
-  background: #b42318;
+  padding: 0.6rem 1rem;
+  border: 1px solid #344039;
+  color: #c5cfc8;
+  font-size: 0.875rem;
+}
+
+.nav-logout:hover {
+  background: #19221b;
 }
 
 .menu-toggle {
   display: none;
-  font-size: 1.25rem;
+  border: 1px solid #344039;
+  font-size: 0.875rem;
 }
 
 .page-card {
@@ -447,13 +485,248 @@ button:disabled {
   background: transparent;
 }
 
+/* Home: a quiet, terminal-inspired workspace. */
 .home {
-  padding: 3rem 2rem;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 4.5rem 2rem 5rem;
+  color: #e5e9e6;
 }
 
-@media (max-width: 760px) {
+.home-path,
+.scope-note,
+.workspace-name,
+.workspace-open,
+.shortcuts-heading > span {
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.home-hero {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: center;
+  gap: 5rem;
+  padding-bottom: 4.5rem;
+}
+
+.home-path {
+  margin: 0 0 3rem;
+  color: #a7b2ab;
+  font-size: 0.875rem;
+}
+
+.home-path span,
+.hero-copy h1 span,
+.scope-file > span {
+  color: #a3e67b;
+}
+
+.home-welcome {
+  margin: 0 0 1rem;
+  color: #a7b2ab;
+  overflow-wrap: anywhere;
+}
+
+.hero-copy h1 {
+  margin: 0;
+  font-size: clamp(3rem, 5.5vw, 4.7rem);
+  line-height: 1.05;
+  letter-spacing: -0.065em;
+  font-weight: 650;
+}
+
+.hero-description {
+  max-width: 330px;
+  margin: 1.5rem 0 2rem;
+  color: #a7b2ab;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+}
+
+.home-primary {
+  padding: 0.9rem 1.3rem;
+  color: #10200c;
+  background: #a3e67b;
+  border: 1px solid #a3e67b;
+  border-radius: 3px;
+}
+
+.home-primary:hover {
+  background: #b8f394;
+}
+
+.scope-note {
+  min-width: 0;
+  background: #101613;
+  border: 1px solid #2b3530;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.scope-file {
+  padding: 0.9rem 1.5rem;
+  border-bottom: 1px solid #2b3530;
+  color: #a7b2ab;
+}
+
+.scope-file > span {
+  margin-right: 0.5rem;
+}
+
+.scope-body {
+  padding: 1.75rem 1.5rem;
+}
+
+.scope-body h2 {
+  margin: 0 0 1.5rem;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.scope-body ul {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #b8c4bc;
+  line-height: 1.6;
+  list-style-type: square;
+}
+
+.scope-body li::marker {
+  color: #a3e67b;
+}
+
+.scope-comment {
+  margin: 2rem 0 0;
+  color: #8b9a90;
+  line-height: 1.7;
+}
+
+.shortcuts-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.shortcuts-heading h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.shortcuts-heading > span {
+  color: #8b9a90;
+  font-size: 0.875rem;
+}
+
+.workspace-link {
+  display: grid;
+  grid-template-columns: 1fr 1.8fr auto;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 1.6rem 0;
+  border-top: 1px solid #29332d;
+  border-radius: 0;
+  color: #e5e9e6;
+  background: transparent;
+  text-align: left;
+  font-weight: 400;
+}
+
+.workspace-link:last-child {
+  border-bottom: 1px solid #29332d;
+}
+
+.workspace-link:hover {
+  background: #121a15;
+}
+
+.workspace-name > span {
+  margin-right: 0.75rem;
+  color: #8b9a90;
+}
+
+.workspace-description {
+  color: #a7b2ab;
+  line-height: 1.6;
+}
+
+.workspace-open {
+  color: #a3e67b;
+  font-size: 0.875rem;
+}
+
+.site-footer {
+  border-top: 1px solid #29332d;
+  background: #0c100e;
+  color: #e5e9e6;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.footer-brand {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.footer-brand strong {
+  font-size: 1rem;
+}
+
+.footer-brand > span,
+.footer-inner small {
+  color: #8b9a90;
+  font-size: 0.875rem;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.footer-links button {
+  padding: 0.3rem 0;
+  color: #a7b2ab;
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.footer-links button:hover {
+  color: #a3e67b;
+}
+
+button:focus-visible {
+  outline: 3px solid #629347;
+  outline-offset: 4px;
+}
+
+@media (max-width: 1000px) {
+  .home-hero {
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 900px) {
   .navbar {
     flex-wrap: wrap;
+    min-height: 72px;
+    padding: 0 1.25rem;
   }
 
   .menu-toggle {
@@ -469,6 +742,7 @@ button:disabled {
 
   .nav-links-open {
     display: flex;
+    padding-bottom: 1rem;
   }
 
   .nav-link,
@@ -477,7 +751,9 @@ button:disabled {
     margin: 0;
     text-align: left;
   }
+}
 
+@media (max-width: 760px) {
   .page-card {
     margin: 1.5rem 1rem;
     padding: 1.5rem;
@@ -507,5 +783,35 @@ button:disabled {
 
   .review-actions {
     justify-content: flex-start;
+  }
+
+  .home {
+    padding: 2.5rem 1.25rem;
+  }
+
+  .home-hero {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .home-path {
+    margin-bottom: 2rem;
+  }
+
+  .workspace-link {
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+  }
+
+  .workspace-description {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+
+  .footer-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 2rem 1.25rem;
   }
 }
