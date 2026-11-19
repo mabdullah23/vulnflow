@@ -64,10 +64,15 @@ function App() {
           <main className="app-content">{renderPage()}</main>
           <Footer onNavigate={setActivePage} />
         </div>
-      ) : page === "login" ? (
-        <main><Login onAuthenticated={setUser} onSwitch={() => setPage("signin")} /></main>
       ) : (
-        <main><Signin onAuthenticated={setUser} onSwitch={() => setPage("login")} /></main>
+        <main className="auth-page">
+          {page === "login" ? (
+            <Login onAuthenticated={setUser} onSwitch={() => setPage("signin")} />
+          ) : (
+            <Signin onAuthenticated={setUser} onSwitch={() => setPage("login")} />
+          )}
+          <p className="auth-note">Independent research. Responsible disclosure.</p>
+        </main>
       )}
     </div>
   );

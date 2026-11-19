@@ -46,6 +46,7 @@ function CreateProject({ onCreated, onCancel }) {
 
   return (
     <section className="page-card">
+      <p className="page-path">~/ projects / new</p>
       <div className="page-heading">
         <div>
           <h1>Create Security Program</h1>

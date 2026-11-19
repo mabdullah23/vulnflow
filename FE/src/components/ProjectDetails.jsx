@@ -27,7 +27,8 @@ function ProjectDetails({ projectId, onBack }) {
 
   return (
     <section className="page-card">
-      <button className="back-button" type="button" onClick={onBack}>← Back to projects</button>
+      <p className="page-path">~/ projects / details</p>
+      <button className="back-button" type="button" onClick={onBack}>Back to projects</button>
       <div className="page-heading">
         <div>
           <h1>{project.name}</h1>

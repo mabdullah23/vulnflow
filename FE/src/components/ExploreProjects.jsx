@@ -26,6 +26,7 @@ function ExploreProjects() {
 
   return (
     <section className="page-card">
+      <p className="page-path">~/ explore</p>
       <h1>Explore Projects</h1>
       <p>Discover security programs and choose a project to review.</p>
       {error && <p className="error">{error}</p>}
@@ -40,9 +41,9 @@ function ExploreProjects() {
             key={project.id}
             onClick={() => setSelectedProjectId(project.id)}
           >
-            <h2>{project.name}</h2>
-            <p>{project.domainLabel}</p>
-            <small>${project.bountyAmount} bounty</small>
+            <span className="explore-title">{project.name}</span>
+            <span className="explore-domain">{project.domainLabel}</span>
+            <span className="bounty">${project.bountyAmount} bounty</span>
           </button>
         ))}
       </div>

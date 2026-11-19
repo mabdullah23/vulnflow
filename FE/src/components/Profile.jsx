@@ -38,6 +38,7 @@ function Profile({ user, onUpdated }) {
 
   return (
     <section className="page-card">
+      <p className="page-path">~/ profile</p>
       <h1>Profile</h1>
       <p>Manage your researcher profile.</p>
       <form className="profile-form" onSubmit={submit}>

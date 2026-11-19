@@ -31,16 +31,18 @@ function Login({ onAuthenticated, onSwitch }) {
 
   return (
     <section className="card">
-      <h1>VulnFlow</h1>
-      <p className="subtitle">Welcome back</p>
+      <div className="auth-brand"><span className="brand-mark" aria-hidden="true">[v]</span> VulnFlow</div>
+      <p className="page-path">~/ login</p>
+      <h1>Welcome back.</h1>
+      <p className="subtitle">Log in to your workspace.</p>
       <form onSubmit={submit}>
         <label>
           Email
-          <input type="email" name="email" value={form.email} onChange={updateField} required />
+          <input type="email" name="email" autoComplete="email" value={form.email} onChange={updateField} required />
         </label>
         <label>
           Password
-          <input type="password" name="password" value={form.password} onChange={updateField} required />
+          <input type="password" name="password" autoComplete="current-password" value={form.password} onChange={updateField} required />
         </label>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={isSubmitting}>

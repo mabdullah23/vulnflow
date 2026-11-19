@@ -44,15 +44,16 @@ function Projects() {
 
   return (
     <section className="page-card">
+      <p className="page-path">~/ projects</p>
       <div className="page-heading">
         <div>
           <h1>My Projects</h1>
           <p>Create security programs and review researcher submissions.</p>
         </div>
-        <button className="add-button" type="button" onClick={() => setView("create")}>+ Add task</button>
+        <button className="add-button" type="button" onClick={() => setView("create")}>Create program</button>
       </div>
       {error && <p className="error">{error}</p>}
-      {!error && projects.length === 0 && <p className="empty-state">No projects yet. Use “+ Add task” to create your first program.</p>}
+      {!error && projects.length === 0 && <p className="empty-state">No projects yet. Create a program to start receiving reports.</p>}
       <div className="item-list">
         {projects.map((project) => (
           <button

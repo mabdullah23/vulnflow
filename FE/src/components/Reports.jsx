@@ -16,6 +16,7 @@ function Reports() {
 
   return (
     <section className="page-card">
+      <p className="page-path">~/ reports</p>
       <h1>My Reports</h1>
       <p>Reports you submitted to bounty programs.</p>
       {error && <p className="error">{error}</p>}
