@@ -1,46 +1,21 @@
-import { randomUUID } from "node:crypto";
 import express from "express";
-import { supabase } from "../config/supabase.js";
+import jwt from "jsonwebtoken";
+import { storeFile, removeFile, serverUrl, uploadsRoot } from "../config/storage.js";
 import Project from "../models/Project.js";
 import Submission from "../models/Submission.js";
 import { requireAuth } from "../middleware/auth.js";
 import { reportEvidenceUpload } from "../middleware/reportUpload.js";
 
 const router = express.Router();
-const videoBucket = "report-evidence";
-const pdfBucket = "bounty-attachments";
-
-async function signedEvidenceUrl(bucket, path, fallbackUrl) {
-  if (!path) {
-    return fallbackUrl;
-  }
-
-  const { data, error } = await supabase.storage
-    .from(bucket)
-    .createSignedUrl(path, 60 * 60);
-
-  if (error) {
-    throw new Error(`Could not create a secure ${bucket} link.`);
-  }
-
-  return data.signedUrl;
+function evidenceUrl(submission, kind, request) {
+  const storedPath = submission[`${kind}Path`];
+  if (!storedPath?.startsWith("reports/")) return submission[`${kind}Url`] || "";
+  const token = jwt.sign({ purpose: "evidence", submissionId: submission._id.toString(), kind },
+    process.env.JWT_SECRET, { expiresIn: "1h", audience: "evidence-download" });
+  return `${serverUrl(request)}/api/submissions/${submission._id}/files/${kind}?token=${encodeURIComponent(token)}`;
 }
 
-function getStoredPath(url, bucket) {
-  if (!url) {
-    return "";
-  }
-
-  const marker = `/object/public/${bucket}/`;
-  const markerIndex = url.indexOf(marker);
-  return markerIndex === -1
-    ? ""
-    : decodeURIComponent(url.slice(markerIndex + marker.length));
-}
-
-async function submissionResponse(submission) {
-  const videoPath = submission.videoPath || getStoredPath(submission.videoUrl, videoBucket);
-  const pdfPath = submission.pdfPath || getStoredPath(submission.pdfUrl, pdfBucket);
+async function submissionResponse(submission, request) {
 
   return {
     id: submission._id,
@@ -50,8 +25,8 @@ async function submissionResponse(submission) {
     description: submission.description,
     severity: submission.severity,
     status: submission.status,
-    videoUrl: await signedEvidenceUrl(videoBucket, videoPath, submission.videoUrl),
-    pdfUrl: await signedEvidenceUrl(pdfBucket, pdfPath, submission.pdfUrl),
+    videoUrl: evidenceUrl(submission, "video", request),
+    pdfUrl: evidenceUrl(submission, "pdf", request),
     bountyAmount: submission.bountyAmount,
     reviewNote: submission.reviewNote,
     reviewedAt: submission.reviewedAt,
@@ -60,20 +35,40 @@ async function submissionResponse(submission) {
   };
 }
 
-async function uploadFile(bucket, file, ownerId) {
-  const extension = file.originalname.split(".").pop()?.toLowerCase() || "bin";
-  const path = `${ownerId}/${randomUUID()}.${extension}`;
-  const { error } = await supabase.storage.from(bucket).upload(path, file.buffer, {
-    contentType: file.mimetype,
-    upsert: false,
-  });
-
-  if (error) {
-    throw new Error(`Could not upload ${bucket} evidence.`);
+// These scoped links are issued only by authenticated, authorized report endpoints.
+router.get("/:submissionId/files/:kind", async (request, response, next) => {
+  const { submissionId, kind } = request.params;
+  if (!["video", "pdf"].includes(kind) || !/^[a-f\d]{24}$/i.test(submissionId)) {
+    return response.status(404).json({ message: "Evidence not found." });
   }
-
-  return path;
-}
+  try {
+    const payload = jwt.verify(request.query.token, process.env.JWT_SECRET, {
+      algorithms: ["HS256"], audience: "evidence-download",
+    });
+    if (payload.purpose !== "evidence" || payload.submissionId !== submissionId || payload.kind !== kind) {
+      return response.status(401).json({ message: "Invalid evidence link." });
+    }
+  } catch {
+    return response.status(401).json({ message: "Invalid or expired evidence link. Reload your reports." });
+  }
+  try {
+    const submission = await Submission.findById(submissionId);
+    const storedPath = submission?.[`${kind}Path`];
+    if (!storedPath || !/^reports\/[a-f\d]{24}\/[a-f\d-]+\.(mp4|webm|mov|pdf)$/.test(storedPath)) {
+      return response.status(404).json({ message: "Evidence not found." });
+    }
+    response.set("X-Content-Type-Options", "nosniff");
+    response.set("Cache-Control", "private, no-store");
+    response.set("Referrer-Policy", "no-referrer");
+    return response.sendFile(storedPath, { root: uploadsRoot, dotfiles: "deny" }, (error) => {
+      if (!error) return;
+      if (response.headersSent) return next(error);
+      return response.status(error.status === 404 ? 404 : 500).json({ message: "Could not load evidence file." });
+    });
+  } catch (error) {
+    return next(error);
+  }
+});
 
 router.use(requireAuth);
 
@@ -83,7 +78,7 @@ router.get("/mine", async (request, response) => {
       .populate("project", "name domain bountyAmount")
       .sort({ createdAt: -1 });
     return response.json({
-      submissions: await Promise.all(submissions.map(submissionResponse)),
+      submissions: await Promise.all(submissions.map((submission) => submissionResponse(submission, request))),
     });
   } catch (error) {
     console.error("Submission list failed:", error.message);
@@ -108,7 +103,7 @@ router.get("/project/:projectId", async (request, response) => {
       .populate("bugHunter", "name email")
       .sort({ createdAt: -1 });
     return response.json({
-      submissions: await Promise.all(submissions.map(submissionResponse)),
+      submissions: await Promise.all(submissions.map((submission) => submissionResponse(submission, request))),
     });
   } catch (error) {
     console.error("Project submissions failed:", error.message);
@@ -125,6 +120,8 @@ router.post(
   async (request, response) => {
     const { title, description, severity } = request.body;
     const files = request.files || {};
+    const uploadedPaths = [];
+    let saved = false;
 
     if (!title?.trim() || !description?.trim() || !severity) {
       return response.status(400).json({
@@ -153,10 +150,10 @@ router.post(
         });
       }
 
-      const [videoPath, pdfPath] = await Promise.all([
-        uploadFile(videoBucket, files.video[0], request.user._id),
-        uploadFile(pdfBucket, files.pdf[0], request.user._id),
-      ]);
+      const videoPath = await storeFile("reports", files.video[0], request.user._id);
+      uploadedPaths.push(videoPath);
+      const pdfPath = await storeFile("reports", files.pdf[0], request.user._id);
+      uploadedPaths.push(pdfPath);
 
       const submission = await Submission.create({
         project: project._id,
@@ -170,11 +167,13 @@ router.post(
         pdfUrl: "",
         bountyAmount: project.bountyAmount,
       });
+      saved = true;
 
       return response.status(201).json({
-        submission: await submissionResponse(submission),
+        submission: await submissionResponse(submission, request),
       });
     } catch (error) {
+      if (!saved) await Promise.all(uploadedPaths.map(removeFile));
       console.error("Submission creation failed:", error.message);
       return response.status(500).json({ message: "Could not submit report." });
     }
@@ -211,7 +210,7 @@ router.patch("/:submissionId/review", async (request, response) => {
     await submission.save();
 
     return response.json({
-      submission: await submissionResponse(submission),
+      submission: await submissionResponse(submission, request),
     });
   } catch (error) {
     console.error("Submission review failed:", error.message);

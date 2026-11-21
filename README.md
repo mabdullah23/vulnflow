@@ -12,7 +12,8 @@ BE/  Express backend
      src/routes/      Complete API areas: auth, profile, projects, submissions
      src/models/      Mongoose schemas
      src/middleware/  Authentication and upload middleware
-     src/config/      MongoDB and Supabase configuration
+     src/config/      MongoDB and local file storage configuration
+     uploads/         Uploaded profile images and report evidence (ignored by Git)
 ```
 
 ## Run the demo
@@ -43,7 +44,7 @@ Passwords are hashed with bcrypt. The frontend stores the JWT locally for this d
 
 ## Profile images
 
-The authenticated `PATCH /api/profile` endpoint accepts a multipart form field named `profileImage`, uploads it to the Supabase `profile-images` bucket, and stores the public image URL in MongoDB. The bucket must be configured as public for the returned URL to display. Images are limited to 5 MB and support JPEG, PNG, WebP, and GIF.
+The authenticated `PATCH /api/profile` endpoint accepts a multipart form field named `profileImage`, saves it under `BE/uploads/profile-images/<userId>/`, and stores its public backend URL in MongoDB. Replacing a local profile picture removes the previous image. Images are limited to 5 MB and support JPEG, PNG, WebP, and GIF.
 
 ## Security programs
 
@@ -51,8 +52,10 @@ The **My Projects** page supports creating programs for Web Application, API, Cl
 
 ## Bounty reports
 
-Bug hunters can submit a report from a project detail page with a title, description, severity, reproduction video, and PDF evidence. Videos are uploaded to the Supabase `report-evidence` bucket and PDFs to `bounty-attachments`. The backend stores each bucket path in MongoDB and creates one-hour signed Supabase URLs when reports are loaded, so the buckets can remain private. Clients are identified as project owners and can view, approve, or reject submissions. Submitted reports appear in **My Reports** with their current status and evidence links. Evidence files are limited to 50 MB each.
+Bug hunters can submit a report from a project detail page with a title, description, severity, reproduction video, and PDF evidence. Files are saved under `BE/uploads/reports/<userId>/`, with relative paths stored in MongoDB. This folder is not publicly served. After checking report access, the backend issues one-hour signed download links that work in a new browser tab. Reload the reports to renew expired links. Clients are identified as project owners and can view, approve, or reject submissions. Submitted reports appear in **My Reports** with their current status and evidence links. Evidence files are limited to 50 MB each. Failed submissions clean up newly saved files.
+
+The upload folders are created automatically, independent of the terminal's working directory. Keep `BE/uploads` when restarting or moving the demo; MongoDB contains file paths, not the files themselves. Existing Supabase files are not automatically copied: re-upload profile images and resubmit evidence to store them locally.
 
 ## Environment variables
 
-Local `BE/.env` and `FE/.env` files are ignored by Git. Copy the corresponding `.env.example` files when setting up a new machine, then set `MONGODB_URI` in `BE/.env`. Never commit credentials or paste them into tracked files.
+Local `BE/.env` and `FE/.env` files are ignored by Git. Copy the corresponding `.env.example` files when setting up a new machine, then set `MONGODB_URI` and a strong `JWT_SECRET` in `BE/.env`. `API_URL` is the backend's public address for uploaded images and evidence links (for example, `http://localhost:5000`); if omitted, the request origin is used. Supabase configuration is no longer required. Never commit credentials or paste them into tracked files.
