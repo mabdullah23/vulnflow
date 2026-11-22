@@ -61,6 +61,14 @@ Run `npm.cmd test` in `BE` for the mocked login and upload checks. Live Firebase
 
 References: [email/password](https://firebase.google.com/docs/auth/web/password-auth), [Google sign-in](https://firebase.google.com/docs/auth/web/google-signin), [token verification](https://firebase.google.com/docs/auth/admin/verify-id-tokens).
 
+## AI description assistant
+
+In the vulnerability report form, **Improve with AI** rewrites the bug hunter's draft and separately flags missing details. The user can choose **Use suggestion** or **Cancel**; the draft is never replaced automatically. Editing the source description hides outdated suggestions. Only the description is sent to Groq; files, account details, title, and severity are not sent or modified.
+
+Add `GROQ_API_KEY=your-key` to `BE/.env`, then restart the backend. Optionally set `GROQ_MODEL` (default: `openai/gpt-oss-20b`). No new package or frontend key is needed. Without a key, normal report submission still works and the AI button returns a setup message.
+
+The code is separated into the backend provider service (`BE/src/services/reportAssistant.js`), authenticated route (`POST /api/ai/improve-description`), frontend API helper, and suggestion component. The provider call uses a timeout and validates the JSON response. Its prompt asks the model to preserve facts and flag unknowns; users should review the result because AI can still make mistakes. [Groq API reference](https://console.groq.com/docs/api-reference).
+
 ## Profile images
 
 The authenticated `PATCH /api/profile` endpoint accepts a multipart form field named `profileImage`, saves it under `BE/uploads/profile-images/<userId>/`, and stores its public backend URL in MongoDB. Replacing a local profile picture removes the previous image. Images are limited to 5 MB and support JPEG, PNG, WebP, and GIF.

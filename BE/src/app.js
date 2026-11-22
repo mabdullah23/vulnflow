@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.js";
 import projectRoutes from "./routes/projects.js";
 import profileRoutes from "./routes/profile.js";
 import submissionRoutes from "./routes/submissions.js";
+import aiRoutes from "./routes/ai.js";
 import { uploadsRoot } from "./config/storage.js";
 import path from "node:path";
 
@@ -24,6 +25,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/submissions", submissionRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/api/health", (_request, response) => {
   response.json({ status: "ok" });

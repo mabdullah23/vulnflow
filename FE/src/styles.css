@@ -1063,3 +1063,29 @@ button:focus-visible {
   color: #8a9b99;
   text-align: center;
 }
+.description-assistant {
+  display: grid;
+  gap: 10px;
+}
+
+.description-assistant > button {
+  justify-self: start;
+}
+
+.ai-suggestion {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+
+.ai-suggestion-text {
+  white-space: pre-wrap;
+}
+
+.ai-suggestion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
