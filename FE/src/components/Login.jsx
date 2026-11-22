@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { authRequest, tokenKey } from "../services/authApi.js";
+import { authErrorMessage, loginWithEmail } from "../services/firebaseAuth.js";
+import GoogleSignInButton from "./GoogleSignInButton.jsx";
 
 function Login({ onAuthenticated, onSwitch }) {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -16,14 +17,9 @@ function Login({ onAuthenticated, onSwitch }) {
     setIsSubmitting(true);
 
     try {
-      const data = await authRequest("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify(form),
-      });
-      localStorage.setItem(tokenKey, data.token);
-      onAuthenticated(data.user);
+      onAuthenticated(await loginWithEmail(form));
     } catch (requestError) {
-      setError(requestError.message);
+      setError(authErrorMessage(requestError));
     } finally {
       setIsSubmitting(false);
     }
@@ -49,9 +45,10 @@ function Login({ onAuthenticated, onSwitch }) {
           {isSubmitting ? "Please wait..." : "Log in"}
         </button>
       </form>
+      <GoogleSignInButton disabled={isSubmitting} onPendingChange={setIsSubmitting} onError={setError} onAuthenticated={onAuthenticated} />
       <p className="switch">
         Need an account?{" "}
-        <button className="link-button" type="button" onClick={onSwitch}>Sign up</button>
+        <button className="link-button" type="button" disabled={isSubmitting} onClick={onSwitch}>Sign up</button>
       </p>
     </section>
   );

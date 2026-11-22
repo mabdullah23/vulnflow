@@ -9,6 +9,7 @@ import Projects from "./components/Projects.jsx";
 import Reports from "./components/Reports.jsx";
 import Signin from "./components/Signin.jsx";
 import { authRequest, tokenKey } from "./services/authApi.js";
+import { logoutFirebase } from "./services/firebaseAuth.js";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -30,11 +31,12 @@ function App() {
       .finally(() => setCheckingAuth(false));
   }, []);
 
-  function logout() {
+  async function logout() {
     localStorage.removeItem(tokenKey);
     setUser(null);
     setPage("login");
     setActivePage("home");
+    await logoutFirebase().catch(() => {});
   }
 
   function renderPage() {

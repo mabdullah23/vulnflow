@@ -1,31 +1,57 @@
 import bcrypt from "bcrypt";
 import express from "express";
 import jwt from "jsonwebtoken";
+import { getFirebaseAuth } from "../config/firebase.js";
 import User from "../models/User.js";
 import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
-const defaultProfilePicture = `${process.env.CLIENT_URL || "http://localhost:5173"}/images/neon-hooded-hacker.svg`;
 
 function publicUser(user) {
   return {
     id: user._id,
     name: user.name,
     email: user.email,
-    profilePicture: user.profilePicture || defaultProfilePicture,
+    profilePicture: user.profilePicture || `${process.env.CLIENT_URL || "http://localhost:5173"}/images/neon-hooded-hacker.svg`,
     createdAt: user.createdAt,
   };
 }
 
 function createToken(userId) {
-  if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET is not configured in BE/.env.");
-  }
-
-  return jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "1d",
-  });
+  if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET is not configured in BE/.env.");
+  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || "1d" });
 }
+
+router.post("/firebase", async (request, response) => {
+  const { idToken, username } = request.body || {};
+  if (typeof idToken !== "string" || !idToken) {
+    return response.status(400).json({ message: "A Firebase ID token is required." });
+  }
+  let identity;
+  try {
+    identity = await getFirebaseAuth().verifyIdToken(idToken);
+  } catch (error) {
+    return response.status(error.status || 401).json({ message: error.status === 503 ? error.message : "Invalid or expired Firebase login." });
+  }
+  if (!identity.email || !["password", "google.com"].includes(identity.firebase?.sign_in_provider)) {
+    return response.status(401).json({ message: "Sign in with email/password or Google." });
+  }
+  try {
+    let user = await User.findOne({ firebaseUid: identity.uid });
+    if (!user) {
+      user = await User.create({
+        firebaseUid: identity.uid,
+        email: identity.email.toLowerCase(),
+        name: (typeof username === "string" && username.trim()) || identity.name || identity.email.split("@")[0],
+      });
+    }
+    return response.json({ token: createToken(user._id.toString()), user: publicUser(user) });
+  } catch (error) {
+    return response.status(error.code === 11000 ? 409 : 500).json({
+      message: error.code === 11000 ? "This email already belongs to another account. Use a different email for Firebase." : "Could not complete login. Please try again.",
+    });
+  }
+});
 
 router.post("/signup", async (request, response) => {
   const { username, email, password } = request.body;
@@ -77,7 +103,7 @@ router.post("/login", async (request, response) => {
 
   try {
     const user = await User.findOne({ email: email.trim().toLowerCase() });
-    const passwordMatches = user
+    const passwordMatches = user?.password && !user.firebaseUid
       ? await bcrypt.compare(password, user.password)
       : false;
 
