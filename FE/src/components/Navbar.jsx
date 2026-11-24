@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Notifications from "./Notifications.jsx";
 
 const links = [
   { id: "home", label: "Home" },
@@ -49,6 +50,7 @@ function Navbar({ activePage, onNavigate, onLogout }) {
             Log out
           </button>
         </div>
+        <Notifications />
       </nav>
     </header>
   );

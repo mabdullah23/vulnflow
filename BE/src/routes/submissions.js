@@ -5,6 +5,7 @@ import Project from "../models/Project.js";
 import Submission, { reportStatus, reportTransitions } from "../models/Submission.js";
 import { requireAuth } from "../middleware/auth.js";
 import { reportEvidenceUpload } from "../middleware/reportUpload.js";
+import { notifyReport } from "../services/notifications.js";
 
 const router = express.Router();
 function evidenceUrl(submission, kind, request) {
@@ -169,6 +170,7 @@ router.post(
         bountyAmount: project.bountyAmount,
       });
       saved = true;
+      await notifyReport(project.owner, submission, `New report: "${submission.title}".`);
 
       return response.status(201).json({
         submission: await submissionResponse(submission, request),
@@ -228,6 +230,8 @@ router.patch("/:submissionId/review", async (request, response) => {
     if (!updated) {
       return response.status(409).json({ message: "Report changed. Reload and try again." });
     }
+
+    await notifyReport(updated.bugHunter, updated, `"${updated.title}" is now ${status.replaceAll("_", " ")}.`);
 
     return response.json({
       submission: await submissionResponse(updated, request),

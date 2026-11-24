@@ -66,6 +66,12 @@ Bug hunters can submit a report from a project detail page with a title, descrip
 
 The upload folders are created automatically, independent of the terminal's working directory. Keep `BE/uploads` when restarting or moving the demo; MongoDB contains file paths, not the files themselves. Existing Supabase files are not automatically copied: re-upload profile images and resubmit evidence to store them locally.
 
+## Comments and notifications
+
+Researchers can open a report in **My Reports** to read and add comments. Program owners use **Comments** beside a report in the program review list. Threads are private to that report's researcher and program owner, show oldest comments first, and have a **Refresh comments** button. Comments are plain text with a 2,000-character limit.
+
+The navbar bell shows unread notifications and the latest 30 items. New reports notify the program owner, replies notify the other participant, and status changes notify the researcher. Notifications refresh every 30 seconds and when the bell is opened. **Mark all as read** affects only the current user's notifications. Comments and notifications are stored in MongoDB; no extra service or setup is required. If saving a notification fails, the report or comment remains saved and the backend logs the notification error.
+
 ## Environment variables
 
 Local `BE/.env` and `FE/.env` files are ignored by Git. Copy the corresponding `.env.example` files when setting up a new machine, then set `MONGODB_URI` and a strong `JWT_SECRET` in `BE/.env`. `API_URL` is the backend's public address for uploaded images and evidence links (for example, `http://localhost:5000`); if omitted, the request origin is used. Supabase configuration is no longer required. Never commit credentials or paste them into tracked files.

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { authRequest, tokenKey } from "../services/authApi.js";
 import { statusLabels } from "../services/reportStatus.js";
+import ReportComments from "./ReportComments.jsx";
 
 const actionLabels = {
   under_review: "Start review",
@@ -14,6 +15,7 @@ function SubmissionReviewList({ projectId }) {
   const [submissions, setSubmissions] = useState([]);
   const [error, setError] = useState("");
   const [updating, setUpdating] = useState(null);
+  const [commentReport, setCommentReport] = useState(null);
 
   function loadSubmissions() {
     authRequest(`/api/submissions/project/${projectId}`, {
@@ -58,6 +60,9 @@ function SubmissionReviewList({ projectId }) {
               <small>Bug hunter: {submission.bugHunter?.name || "Unknown"} · <a href={submission.videoUrl} target="_blank" rel="noreferrer">Video</a> · <a href={submission.pdfUrl} target="_blank" rel="noreferrer">PDF</a></small>
             </div>
             <div className="review-actions">
+              <button className="secondary-button" type="button" onClick={() => setCommentReport(commentReport === submission.id ? null : submission.id)}>
+                {commentReport === submission.id ? "Hide comments" : "Comments"}
+              </button>
               <span className={`badge badge-${submission.status}`}>{statusLabels[submission.status]}</span>
               {submission.nextStatuses.map((status) => (
                 <button key={status} type="button" disabled={updating !== null}
@@ -67,6 +72,7 @@ function SubmissionReviewList({ projectId }) {
                 </button>
               ))}
             </div>
+            {commentReport === submission.id && <ReportComments key={submission.id} submissionId={submission.id} />}
           </article>
         ))}
       </div>

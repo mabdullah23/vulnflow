@@ -6,6 +6,8 @@ import projectRoutes from "./routes/projects.js";
 import profileRoutes from "./routes/profile.js";
 import submissionRoutes from "./routes/submissions.js";
 import aiRoutes from "./routes/ai.js";
+import commentRoutes from "./routes/comments.js";
+import notificationRoutes from "./routes/notifications.js";
 import { uploadsRoot } from "./config/storage.js";
 import path from "node:path";
 
@@ -24,7 +26,9 @@ app.use("/uploads/profile-images", express.static(path.join(uploadsRoot, "profil
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/submissions", commentRoutes);
 app.use("/api/submissions", submissionRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.use("/api/ai", aiRoutes);
 
 app.get("/api/health", (_request, response) => {

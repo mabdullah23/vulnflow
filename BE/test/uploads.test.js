@@ -8,6 +8,7 @@ import app from "../src/app.js";
 import User from "../src/models/User.js";
 import Project from "../src/models/Project.js";
 import Submission from "../src/models/Submission.js";
+import Notification from "../src/models/Notification.js";
 import { removeFile, uploadsRoot } from "../src/config/storage.js";
 
 test("local uploads, scoped downloads, access checks, and failure cleanup", async () => {
@@ -19,7 +20,9 @@ test("local uploads, scoped downloads, access checks, and failure cleanup", asyn
   const projectId = "223456789012345678901234";
   const submissionId = "323456789012345678901234";
   const original = { findUser: User.findById, update: User.findByIdAndUpdate,
-    project: Project.findById, create: Submission.create, find: Submission.findById };
+    project: Project.findById, create: Submission.create, find: Submission.findById, notify: Notification.create };
+  const notifications = [];
+  Notification.create = async (data) => { notifications.push(data); };
   const files = new Set();
   let user = { _id: userId, name: "Demo", email: "demo@example.com" };
   let submission;
@@ -71,6 +74,10 @@ test("local uploads, scoped downloads, access checks, and failure cleanup", asyn
     const report = (await response.json()).submission;
     assert.equal(report.status, "submitted");
     assert.deepEqual(report.nextStatuses, ["under_review"]);
+    assert.equal(notifications.length, 1);
+    assert.equal(notifications[0].recipient, projectOwner);
+    assert.equal(notifications[0].submission, submissionId);
+    assert.match(notifications[0].message, /New report: "Demo bug"/);
     assert.equal(await readFile(path.join(uploadsRoot, submission.pdfPath), "utf8"), "%PDF-demo");
     response = await fetch(report.pdfUrl);
     assert.equal(response.status, 200);
@@ -96,6 +103,7 @@ test("local uploads, scoped downloads, access checks, and failure cleanup", asyn
     response = await fetch(`${base}/api/submissions/project/${projectId}`, { method: "POST", headers, body: reportForm() });
     assert.equal(response.status, 403);
     assert.deepEqual(await readdir(folder), before);
+    assert.equal(notifications.length, 1);
   } finally {
     await Promise.all([...files].map(removeFile));
     for (const folder of ["reports", "profile-images"]) {
@@ -107,6 +115,7 @@ test("local uploads, scoped downloads, access checks, and failure cleanup", asyn
     Project.findById = original.project;
     Submission.create = original.create;
     Submission.findById = original.find;
+    Notification.create = original.notify;
     if (previousSecret === undefined) delete process.env.JWT_SECRET;
     else process.env.JWT_SECRET = previousSecret;
     if (previousApiUrl === undefined) delete process.env.API_URL;

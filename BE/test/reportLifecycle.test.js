@@ -5,17 +5,20 @@ import jwt from "jsonwebtoken";
 import app from "../src/app.js";
 import User from "../src/models/User.js";
 import Submission from "../src/models/Submission.js";
+import Notification from "../src/models/Notification.js";
 
 test("report lifecycle enforces transitions, ownership, and legacy compatibility", async () => {
   const previousSecret = process.env.JWT_SECRET;
   process.env.JWT_SECRET = "report-lifecycle-test-secret";
-  const original = { user: User.findById, find: Submission.findById, update: Submission.findOneAndUpdate };
+  const original = { user: User.findById, find: Submission.findById, update: Submission.findOneAndUpdate, notify: Notification.create };
   const ownerId = "123456789012345678901234";
   const researcherId = "223456789012345678901234";
   const reportId = "323456789012345678901234";
   let report;
   let conflict = false;
   let writes = 0;
+  const notifications = [];
+  Notification.create = async (data) => { notifications.push(data); };
   User.findById = (id) => ({ select: async () => ({ _id: id }) });
   Submission.findById = () => ({ populate: async () => report });
   Submission.findOneAndUpdate = (filter, update, options) => ({ populate: async () => {
@@ -29,7 +32,8 @@ test("report lifecycle enforces transitions, ownership, and legacy compatibility
     return report;
   } });
   function reset(status) {
-    report = { _id: reportId, status, project: { owner: ownerId }, reviewNote: "Existing note" };
+    report = { _id: reportId, title: "Demo report", bugHunter: researcherId,
+      status, project: { owner: ownerId }, reviewNote: "Existing note" };
   }
   const server = app.listen(0, "127.0.0.1");
   await once(server, "listening");
@@ -51,10 +55,12 @@ test("report lifecycle enforces transitions, ownership, and legacy compatibility
     for (const from of Object.keys(allowed)) {
       for (const to of Object.keys(allowed)) {
         reset(from);
+        const beforeNotifications = notifications.length;
         const response = await patch({ status: to });
         const valid = allowed[from].includes(to);
         assert.equal(response.status, valid ? 200 : 400, `${from} -> ${to}`);
         assert.equal(report.status, valid ? to : from);
+        assert.equal(notifications.length, beforeNotifications + (valid ? 1 : 0));
         if (valid) {
           const data = (await response.json()).submission;
           assert.equal(data.status, to);
@@ -62,6 +68,10 @@ test("report lifecycle enforces transitions, ownership, and legacy compatibility
           assert.equal(report.reviewedBy, ownerId);
           assert.ok(report.reviewedAt instanceof Date);
           assert.equal(report.reviewNote, "Existing note");
+          assert.equal(notifications.at(-1).recipient, researcherId);
+          assert.equal(notifications.at(-1).submission, reportId);
+          assert.match(notifications.at(-1).message, /Demo report/);
+          assert.ok(notifications.at(-1).message.includes(to.replaceAll("_", " ")));
         }
       }
     }
@@ -91,6 +101,7 @@ test("report lifecycle enforces transitions, ownership, and legacy compatibility
     User.findById = original.user;
     Submission.findById = original.find;
     Submission.findOneAndUpdate = original.update;
+    Notification.create = original.notify;
     if (previousSecret === undefined) delete process.env.JWT_SECRET;
     else process.env.JWT_SECRET = previousSecret;
     await new Promise((resolve) => server.close(resolve));

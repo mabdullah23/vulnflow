@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { authRequest, tokenKey } from "../services/authApi.js";
 import { statusLabels } from "../services/reportStatus.js";
+import ReportComments from "./ReportComments.jsx";
 
 function Reports() {
   const [reports, setReports] = useState([]);
@@ -44,6 +45,7 @@ function Reports() {
             <strong>PDF</strong><a href={selectedReport.pdfUrl} target="_blank" rel="noreferrer">View PDF</a>
             <strong>Review note</strong><span>{selectedReport.reviewNote || "No review note yet."}</span>
           </div>
+          <ReportComments key={selectedReport.id} submissionId={selectedReport.id} />
         </article>
       )}
     </section>

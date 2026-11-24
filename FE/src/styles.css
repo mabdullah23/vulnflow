@@ -136,6 +136,73 @@ main > p {
   font-size: 0.875rem;
 }
 
+.notifications {
+  position: relative;
+}
+
+.notification-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.notification-count {
+  color: var(--accent);
+  font-size: 0.75rem;
+}
+
+.notification-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 10;
+  width: min(360px, calc(100vw - 2rem));
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.notification-panel > button {
+  margin-left: 0.75rem;
+}
+
+.notification-item,
+.report-comment {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.notification-item p {
+  margin: 0;
+}
+
+.notification-item small,
+.report-comment small {
+  color: var(--muted);
+}
+
+.notification-unread {
+  border-left: 2px solid var(--accent);
+  padding-left: 0.75rem;
+}
+
+.report-comments {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.report-comment p {
+  white-space: pre-wrap;
+}
+
 .page-card {
   max-width: 1160px;
   margin: 2rem auto 4rem;
@@ -317,6 +384,7 @@ main > p {
 
 .review-item {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
@@ -935,6 +1003,7 @@ button:focus-visible {
 
   .nav-links {
     display: none;
+    order: 1;
     flex-basis: 100%;
     flex-direction: column;
     align-items: stretch;
