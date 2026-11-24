@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { authRequest, tokenKey } from "../services/authApi.js";
 import { statusLabels } from "../services/reportStatus.js";
 import ReportComments from "./ReportComments.jsx";
+import ListFilters from "./ListFilters.jsx";
+import { defaultFilters, filterReports } from "../services/listFilters.js";
 
 const actionLabels = {
   under_review: "Start review",
@@ -16,6 +18,8 @@ function SubmissionReviewList({ projectId }) {
   const [error, setError] = useState("");
   const [updating, setUpdating] = useState(null);
   const [commentReport, setCommentReport] = useState(null);
+  const [filters, setFilters] = useState(defaultFilters);
+  const visibleSubmissions = filterReports(submissions, filters);
 
   function loadSubmissions() {
     authRequest(`/api/submissions/project/${projectId}`, {
@@ -38,7 +42,8 @@ function SubmissionReviewList({ projectId }) {
         body: JSON.stringify({ status }),
         token: localStorage.getItem(tokenKey),
       });
-      setSubmissions((items) => items.map((item) => item.id === id ? data.submission : item));
+      setSubmissions((items) => items.map((item) => item.id === id
+        ? { ...data.submission, bugHunter: item.bugHunter } : item));
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -50,9 +55,11 @@ function SubmissionReviewList({ projectId }) {
     <div className="submission-review">
       <h2>Submitted reports</h2>
       {error && <p className="error">{error}</p>}
+      <ListFilters type="reports" filters={filters} onChange={setFilters} />
       {!error && submissions.length === 0 && <p className="empty-state">No reports submitted yet.</p>}
+      {!error && submissions.length > 0 && visibleSubmissions.length === 0 && <p className="empty-state">No reports match your search or filters.</p>}
       <div className="item-list">
-        {submissions.map((submission) => (
+        {visibleSubmissions.map((submission) => (
           <article className="review-item" key={submission.id}>
             <div>
               <h3>{submission.title}</h3>

@@ -66,6 +66,10 @@ Bug hunters can submit a report from a project detail page with a title, descrip
 
 The upload folders are created automatically, independent of the terminal's working directory. Keep `BE/uploads` when restarting or moving the demo; MongoDB contains file paths, not the files themselves. Existing Supabase files are not automatically copied: re-upload profile images and resubmit evidence to store them locally.
 
+## Search, filters, and sorting
+
+**My Projects** and **Explore Projects** support searching program names, descriptions, and scope, filtering by domain, and sorting by date, name, or bounty. **My Reports** and program review lists support searching report titles/descriptions, program names, and researcher names where available, filtering by status and severity, and sorting by date, title, or severity. Controls work together and **Clear** restores the default newest-first list. Filtering runs in the browser over the complete lists returned by the existing APIs.
+
 ## Comments and notifications
 
 Researchers can open a report in **My Reports** to read and add comments. Program owners use **Comments** beside a report in the program review list. Threads are private to that report's researcher and program owner, show oldest comments first, and have a **Refresh comments** button. Comments are plain text with a 2,000-character limit.

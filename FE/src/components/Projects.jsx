@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import CreateProject from "./CreateProject.jsx";
 import ProjectDetails from "./ProjectDetails.jsx";
 import { authRequest, tokenKey } from "../services/authApi.js";
+import ListFilters from "./ListFilters.jsx";
+import { defaultFilters, filterProjects } from "../services/listFilters.js";
 
 function Projects() {
   const [projects, setProjects] = useState([]);
   const [view, setView] = useState("list");
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [error, setError] = useState("");
+  const [filters, setFilters] = useState(defaultFilters);
+  const visibleProjects = filterProjects(projects, filters);
 
   function loadProjects() {
     authRequest("/api/projects/mine", {
@@ -56,9 +60,11 @@ function Projects() {
         <button className="add-button" type="button" onClick={() => setView("create")}>Create program</button>
       </div>
       {error && <p className="error">{error}</p>}
+      <ListFilters type="programs" filters={filters} onChange={setFilters} />
       {!error && projects.length === 0 && <p className="empty-state">No projects yet. Create a program to start receiving reports.</p>}
+      {!error && projects.length > 0 && visibleProjects.length === 0 && <p className="empty-state">No programs match your search or filters.</p>}
       <div className="item-list">
-        {projects.map((project) => (
+        {visibleProjects.map((project) => (
           <button
             className="project-item"
             type="button"

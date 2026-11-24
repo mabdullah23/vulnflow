@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import ProjectDetails from "./ProjectDetails.jsx";
 import { authRequest, tokenKey } from "../services/authApi.js";
+import ListFilters from "./ListFilters.jsx";
+import { defaultFilters, filterProjects } from "../services/listFilters.js";
 
 function ExploreProjects() {
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [error, setError] = useState("");
+  const [filters, setFilters] = useState(defaultFilters);
+  const visibleProjects = filterProjects(projects, filters);
 
   useEffect(() => {
     authRequest("/api/projects/explore", {
@@ -30,11 +34,13 @@ function ExploreProjects() {
       <h1>Explore Projects</h1>
       <p>Discover security programs and choose a project to review.</p>
       {error && <p className="error">{error}</p>}
+      <ListFilters type="programs" filters={filters} onChange={setFilters} />
       {!error && projects.length === 0 && (
         <p className="empty-state">No projects are available yet.</p>
       )}
       <div className="project-grid">
-        {projects.map((project) => (
+        {!error && projects.length > 0 && visibleProjects.length === 0 && <p className="empty-state">No programs match your search or filters.</p>}
+        {visibleProjects.map((project) => (
           <button
             className="explore-item"
             type="button"
