@@ -376,12 +376,14 @@ main > p {
   border-color: var(--accent);
 }
 
-.badge-pending {
+.badge-submitted,
+.badge-under_review {
   color: #ebcb86;
   background: #302717;
 }
 
-.badge-approved {
+.badge-accepted,
+.badge-resolved {
   color: var(--accent);
   background: #1c2d1b;
 }
@@ -389,6 +391,11 @@ main > p {
 .badge-rejected {
   color: #ffaaa3;
   background: #2c1919;
+}
+
+.badge-closed {
+  color: var(--muted);
+  background: var(--surface);
 }
 
 .danger-button {

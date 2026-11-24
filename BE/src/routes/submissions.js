@@ -2,7 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { storeFile, removeFile, serverUrl, uploadsRoot } from "../config/storage.js";
 import Project from "../models/Project.js";
-import Submission from "../models/Submission.js";
+import Submission, { reportStatus, reportTransitions } from "../models/Submission.js";
 import { requireAuth } from "../middleware/auth.js";
 import { reportEvidenceUpload } from "../middleware/reportUpload.js";
 
@@ -24,7 +24,8 @@ async function submissionResponse(submission, request) {
     title: submission.title,
     description: submission.description,
     severity: submission.severity,
-    status: submission.status,
+    status: reportStatus(submission.status),
+    nextStatuses: reportTransitions[reportStatus(submission.status)] || [],
     videoUrl: evidenceUrl(submission, "video", request),
     pdfUrl: evidenceUrl(submission, "pdf", request),
     bountyAmount: submission.bountyAmount,
@@ -182,12 +183,15 @@ router.post(
 
 router.patch("/:submissionId/review", async (request, response) => {
   try {
-    const { status, reviewNote = "" } = request.body;
+    const { status, reviewNote } = request.body;
 
-    if (!["approved", "rejected"].includes(status)) {
+    if (typeof status !== "string" || !Object.hasOwn(reportTransitions, status)) {
       return response.status(400).json({
-        message: "Status must be approved or rejected.",
+        message: "Invalid report status.",
       });
+    }
+    if (reviewNote !== undefined && typeof reviewNote !== "string") {
+      return response.status(400).json({ message: "Review note must be text." });
     }
 
     const submission = await Submission.findById(request.params.submissionId)
@@ -203,14 +207,30 @@ router.patch("/:submissionId/review", async (request, response) => {
       });
     }
 
-    submission.status = status;
-    submission.reviewNote = reviewNote.trim();
-    submission.reviewedAt = new Date();
-    submission.reviewedBy = request.user._id;
-    await submission.save();
+    const currentStatus = reportStatus(submission.status);
+    if (!reportTransitions[currentStatus]?.includes(status)) {
+      return response.status(400).json({
+        message: `Cannot change status from ${currentStatus} to ${status}.`,
+      });
+    }
+
+    // Match the old status too, so simultaneous reviews cannot skip a step.
+    const updated = await Submission.findOneAndUpdate(
+      { _id: submission._id, status: submission.status },
+      { $set: {
+        status,
+        reviewNote: reviewNote === undefined ? submission.reviewNote : reviewNote.trim(),
+        reviewedAt: new Date(),
+        reviewedBy: request.user._id,
+      } },
+      { new: true, runValidators: true },
+    ).populate("project");
+    if (!updated) {
+      return response.status(409).json({ message: "Report changed. Reload and try again." });
+    }
 
     return response.json({
-      submission: await submissionResponse(submission, request),
+      submission: await submissionResponse(updated, request),
     });
   } catch (error) {
     console.error("Submission review failed:", error.message);

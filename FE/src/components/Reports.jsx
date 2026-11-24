@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { authRequest, tokenKey } from "../services/authApi.js";
+import { statusLabels } from "../services/reportStatus.js";
 
 function Reports() {
   const [reports, setReports] = useState([]);
@@ -25,7 +26,7 @@ function Reports() {
         {reports.map((report) => (
           <button className="report-item" type="button" key={report.id} onClick={() => setSelectedReport(report)}>
             <span><strong>{report.title}</strong><small>{report.project?.name || "Project"} · {report.severity}</small></span>
-            <span className={`badge badge-${report.status}`}>{report.status}</span>
+            <span className={`badge badge-${report.status}`}>{statusLabels[report.status]}</span>
           </button>
         ))}
       </div>
@@ -37,7 +38,7 @@ function Reports() {
           </div>
           <p>{selectedReport.description}</p>
           <div className="program-meta">
-            <strong>Status</strong><span>{selectedReport.status}</span>
+            <strong>Status</strong><span>{statusLabels[selectedReport.status]}</span>
             <strong>Severity</strong><span>{selectedReport.severity}</span>
             <strong>Video</strong><a href={selectedReport.videoUrl} target="_blank" rel="noreferrer">View video</a>
             <strong>PDF</strong><a href={selectedReport.pdfUrl} target="_blank" rel="noreferrer">View PDF</a>

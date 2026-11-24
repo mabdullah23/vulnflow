@@ -33,7 +33,7 @@ test("local uploads, scoped downloads, access checks, and failure cleanup", asyn
   Project.findById = async () => ({ _id: projectId, owner: projectOwner, bountyAmount: 100 });
   Submission.create = async (data) => {
     if (failSave) throw new Error("Simulated database failure");
-    submission = { ...data, _id: submissionId };
+    submission = { ...data, _id: submissionId, status: new Submission(data).status };
     files.add(data.videoPath);
     files.add(data.pdfPath);
     return submission;
@@ -69,6 +69,8 @@ test("local uploads, scoped downloads, access checks, and failure cleanup", asyn
     response = await fetch(`${base}/api/submissions/project/${projectId}`, { method: "POST", headers, body: reportForm() });
     assert.equal(response.status, 201);
     const report = (await response.json()).submission;
+    assert.equal(report.status, "submitted");
+    assert.deepEqual(report.nextStatuses, ["under_review"]);
     assert.equal(await readFile(path.join(uploadsRoot, submission.pdfPath), "utf8"), "%PDF-demo");
     response = await fetch(report.pdfUrl);
     assert.equal(response.status, 200);
