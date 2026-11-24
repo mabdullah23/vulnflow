@@ -17,12 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: function () { return !this.firebaseUid; },
-  },
-  firebaseUid: {
-    type: String,
-    unique: true,
-    sparse: true,
+    required: true,
   },
   profilePicture: {
     type: String,

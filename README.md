@@ -34,32 +34,13 @@ npm.cmd run dev
 
 The backend connects to MongoDB before starting. The React page at `http://localhost:5173` fetches its message from the Express API at `http://localhost:5000/api/message`.
 
-## Authentication demo
+## Authentication
 
-Email/password signup and Google sign-in use Firebase when configured. The frontend sends a Firebase ID token to `POST /api/auth/firebase`. Express verifies it, finds or creates a MongoDB user by `firebaseUid`, and returns the existing app JWT. Projects, reports, and uploads keep using MongoDB user IDs. Logout clears both sessions.
+Email/password signup and login use the Express API and MongoDB. Signup stores a bcrypt password hash in the user document. Login verifies that hash and returns an app JWT. The browser stores only the JWT in localStorage (`vulnflow_token`); passwords are not saved in browser storage. Logout removes the token.
 
-With Firebase settings empty, the original bcrypt email signup/login works for a local demo. Once Firebase is configured, use a Firebase account for email or Google login. Old MongoDB accounts are not automatically migrated or linked; use a different email for a new Firebase demo account. Existing data is kept.
+Accounts created with the original email/password login continue to work with their existing MongoDB user IDs, projects, and reports. Accounts created exclusively through the removed external provider have no local password hash and cannot use password login until a password is securely established. No database records are deleted by this change.
 
-## Firebase setup
-
-1. Create a project at [Firebase Console](https://console.firebase.google.com/).
-2. In **Authentication > Sign-in method**, enable **Email/Password** and **Google** (select a support email).
-3. Register a **Web app** in **Project settings > General**. Copy these three values into `FE/.env`:
-
-   ```dotenv
-   VITE_FIREBASE_API_KEY=your-apiKey
-   VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=your-project-id
-   ```
-
-4. Add `FIREBASE_PROJECT_ID=your-project-id` to `BE/.env`. Under **Authentication > Settings > Authorized domains**, add `localhost` if missing.
-5. Restart both servers. Test email signup/login and **Continue with Google**.
-
-No Firestore, Hosting, Analytics, or service-account key is needed. Token verification requires internet access. If Firebase signup succeeds but saving to MongoDB fails, log in to retry instead of signing up again.
-
-Run `npm.cmd test` in `BE` for the mocked login and upload checks. Live Firebase testing requires your project settings.
-
-References: [email/password](https://firebase.google.com/docs/auth/web/password-auth), [Google sign-in](https://firebase.google.com/docs/auth/web/google-signin), [token verification](https://firebase.google.com/docs/auth/admin/verify-id-tokens).
+Set `MONGODB_URI` and `JWT_SECRET` in `BE/.env`. Run `npm.cmd test` in `BE` for authentication, upload, and AI assistant checks.
 
 ## AI description assistant
 
