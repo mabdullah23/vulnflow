@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import ReportSubmissionForm from "./ReportSubmissionForm.jsx";
 import SubmissionReviewList from "./SubmissionReviewList.jsx";
+import EditProject from "./EditProject.jsx";
 import { authRequest, tokenKey } from "../services/authApi.js";
 
 function ProjectDetails({ projectId, onBack }) {
   const [details, setDetails] = useState(null);
   const [error, setError] = useState("");
+  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     authRequest(`/api/projects/${projectId}`, {
@@ -25,10 +27,18 @@ function ProjectDetails({ projectId, onBack }) {
 
   const { project, permissions } = details;
 
+  if (editing && permissions.canEdit) {
+    return <EditProject project={project} onCancel={() => setEditing(false)} onSaved={(updated) => {
+      setDetails({ ...details, project: updated });
+      setEditing(false);
+    }} />;
+  }
+
   return (
     <section className="page-card">
       <p className="page-path">~/ projects / details</p>
       <button className="back-button" type="button" onClick={onBack}>Back to projects</button>
+      {permissions.canEdit && <button className="secondary-button" type="button" onClick={() => setEditing(true)}>Edit program</button>}
       <div className="page-heading">
         <div>
           <h1>{project.name}</h1>

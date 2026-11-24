@@ -37,7 +37,10 @@ function Projects() {
     return (
       <ProjectDetails
         projectId={selectedProjectId}
-        onBack={() => setView("list")}
+        onBack={() => {
+          loadProjects();
+          setView("list");
+        }}
       />
     );
   }
