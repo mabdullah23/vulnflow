@@ -2,16 +2,20 @@ import { useEffect, useState } from "react";
 import CreateProject from "./CreateProject.jsx";
 import ProjectDetails from "./ProjectDetails.jsx";
 import { authRequest, tokenKey } from "../services/authApi.js";
+import ListFilters from "./ListFilters.jsx";
+import { defaultFilters, filterProjects } from "../services/listFilters.js";
 
 function Projects() {
   const [projects, setProjects] = useState([]);
   const [view, setView] = useState("list");
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [error, setError] = useState("");
+  const [filters, setFilters] = useState(defaultFilters);
+  const visibleProjects = filterProjects(projects, filters);
 
   function loadProjects() {
     authRequest("/api/projects/mine", {
-      token: localStorage.getItem(tokenKey),
+      token: sessionStorage.getItem(tokenKey),
     })
       .then((data) => setProjects(data.projects))
       .catch((requestError) => setError(requestError.message));
@@ -37,24 +41,30 @@ function Projects() {
     return (
       <ProjectDetails
         projectId={selectedProjectId}
-        onBack={() => setView("list")}
+        onBack={() => {
+          loadProjects();
+          setView("list");
+        }}
       />
     );
   }
 
   return (
     <section className="page-card">
+      <p className="page-path">~/ projects</p>
       <div className="page-heading">
         <div>
           <h1>My Projects</h1>
           <p>Create security programs and review researcher submissions.</p>
         </div>
-        <button className="add-button" type="button" onClick={() => setView("create")}>+ Add task</button>
+        <button className="add-button" type="button" onClick={() => setView("create")}>Create program</button>
       </div>
       {error && <p className="error">{error}</p>}
-      {!error && projects.length === 0 && <p className="empty-state">No projects yet. Use “+ Add task” to create your first program.</p>}
+      <ListFilters type="programs" filters={filters} onChange={setFilters} />
+      {!error && projects.length === 0 && <p className="empty-state">No projects yet. Create a program to start receiving reports.</p>}
+      {!error && projects.length > 0 && visibleProjects.length === 0 && <p className="empty-state">No programs match your search or filters.</p>}
       <div className="item-list">
-        {projects.map((project) => (
+        {visibleProjects.map((project) => (
           <button
             className="project-item"
             type="button"

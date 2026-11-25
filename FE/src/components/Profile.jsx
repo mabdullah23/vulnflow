@@ -24,7 +24,7 @@ function Profile({ user, onUpdated }) {
       const data = await authRequest("/api/profile", {
         method: "PATCH",
         body: formData,
-        token: localStorage.getItem(tokenKey),
+        token: sessionStorage.getItem(tokenKey),
       });
       onUpdated(data.user);
       setImage(null);
@@ -38,6 +38,7 @@ function Profile({ user, onUpdated }) {
 
   return (
     <section className="page-card">
+      <p className="page-path">~/ profile</p>
       <h1>Profile</h1>
       <p>Manage your researcher profile.</p>
       <form className="profile-form" onSubmit={submit}>

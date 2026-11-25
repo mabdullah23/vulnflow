@@ -20,7 +20,7 @@ function Signin({ onAuthenticated, onSwitch }) {
         method: "POST",
         body: JSON.stringify(form),
       });
-      localStorage.setItem(tokenKey, data.token);
+      sessionStorage.setItem(tokenKey, data.token);
       onAuthenticated(data.user);
     } catch (requestError) {
       setError(requestError.message);
@@ -31,20 +31,22 @@ function Signin({ onAuthenticated, onSwitch }) {
 
   return (
     <section className="card">
-      <h1>VulnFlow</h1>
-      <p className="subtitle">Create your account</p>
+      <div className="auth-brand"><span className="brand-mark" aria-hidden="true">[v]</span> VulnFlow</div>
+      <p className="page-path">~/ signup</p>
+      <h1>Create your account.</h1>
+      <p className="subtitle">Your research starts here.</p>
       <form onSubmit={submit}>
         <label>
           Username
-          <input name="username" value={form.username} onChange={updateField} required />
+          <input name="username" autoComplete="username" value={form.username} onChange={updateField} required />
         </label>
         <label>
           Email
-          <input type="email" name="email" value={form.email} onChange={updateField} required />
+          <input type="email" name="email" autoComplete="email" value={form.email} onChange={updateField} required />
         </label>
         <label>
           Password
-          <input type="password" name="password" value={form.password} onChange={updateField} minLength="8" required />
+          <input type="password" name="password" autoComplete="new-password" value={form.password} onChange={updateField} minLength="8" required />
         </label>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={isSubmitting}>

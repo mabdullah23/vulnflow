@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { authRequest, tokenKey } from "../services/authApi.js";
+import ReportDescriptionAssistant from "./ReportDescriptionAssistant.jsx";
 
 function ReportSubmissionForm({ projectId, onSubmitted }) {
   const [form, setForm] = useState({
@@ -30,7 +31,7 @@ function ReportSubmissionForm({ projectId, onSubmitted }) {
       await authRequest(`/api/submissions/project/${projectId}`, {
         method: "POST",
         body,
-        token: localStorage.getItem(tokenKey),
+        token: sessionStorage.getItem(tokenKey),
       });
       onSubmitted();
       setForm({ title: "", description: "", severity: "medium" });
@@ -57,6 +58,8 @@ function ReportSubmissionForm({ projectId, onSubmitted }) {
           Vulnerability details
           <textarea name="description" value={form.description} onChange={updateField} rows="5" required />
         </label>
+        <ReportDescriptionAssistant description={form.description} disabled={isSubmitting}
+          onApply={(description) => setForm((current) => ({ ...current, description }))} />
         <label>
           Severity
           <select name="severity" value={form.severity} onChange={updateField}>

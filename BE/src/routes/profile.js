@@ -1,12 +1,10 @@
-import { randomUUID } from "node:crypto";
 import express from "express";
-import { supabase } from "../config/supabase.js";
+import { storeFile, removeFile, serverUrl } from "../config/storage.js";
 import User from "../models/User.js";
 import { requireAuth } from "../middleware/auth.js";
 import { profileImageUpload } from "../middleware/upload.js";
 
 const router = express.Router();
-const bucketName = "profile-images";
 const defaultProfilePicture = `${process.env.CLIENT_URL || "http://localhost:5173"}/images/neon-hooded-hacker.svg`;
 
 function publicUser(user) {
@@ -24,6 +22,8 @@ router.patch(
   requireAuth,
   profileImageUpload.single("profileImage"),
   async (request, response) => {
+    let uploadedPath;
+    let saved = false;
     try {
       const { name } = request.body;
       const updates = {};
@@ -36,23 +36,8 @@ router.patch(
       }
 
       if (request.file) {
-        const extension = request.file.originalname.split(".").pop()?.toLowerCase() || "jpg";
-        const filePath = `${request.user._id}/${randomUUID()}.${extension}`;
-        const { error: uploadError } = await supabase.storage
-          .from(bucketName)
-          .upload(filePath, request.file.buffer, {
-            contentType: request.file.mimetype,
-            upsert: false,
-          });
-
-        if (uploadError) {
-          console.error("Profile image upload failed:", uploadError.message);
-          return response.status(502).json({ message: "Could not upload profile image." });
-        }
-
-        updates.profilePicture = supabase.storage
-          .from(bucketName)
-          .getPublicUrl(filePath).data.publicUrl;
+        uploadedPath = await storeFile("profile-images", request.file, request.user._id);
+        updates.profilePicture = `${serverUrl(request)}/uploads/${uploadedPath}`;
       }
 
       if (!Object.keys(updates).length) {
@@ -63,9 +48,21 @@ router.patch(
         new: true,
         runValidators: true,
       }).select("-password");
+      if (!user) throw new Error("User no longer exists.");
+      saved = true;
+
+      const oldImage = request.user.profilePicture || "";
+      const prefix = `${serverUrl(request)}/uploads/profile-images/`;
+      if (uploadedPath && oldImage.startsWith(prefix)) {
+        const oldPath = oldImage.slice(`${serverUrl(request)}/uploads/`.length);
+        if (/^profile-images\/[a-f\d]{24}\/[a-f\d-]+\.(jpg|png|webp|gif)$/.test(oldPath)) {
+          await removeFile(oldPath);
+        }
+      }
 
       return response.json({ user: publicUser(user) });
     } catch (error) {
+      if (!saved) await removeFile(uploadedPath);
       console.error("Profile update failed:", error.message);
       return response.status(500).json({ message: "Could not update profile." });
     }

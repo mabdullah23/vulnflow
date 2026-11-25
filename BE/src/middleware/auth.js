@@ -13,6 +13,9 @@ export async function requireAuth(request, response, next) {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (!payload.userId || payload.purpose) {
+      return response.status(401).json({ message: "Invalid authentication token." });
+    }
     const user = await User.findById(payload.userId).select("-password");
 
     if (!user) {

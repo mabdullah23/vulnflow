@@ -82,6 +82,37 @@ router.get("/explore", async (request, response) => {
   }
 });
 
+router.patch("/:projectId", async (request, response) => {
+  const { description, scope, bountyAmount } = request.body;
+  if (typeof description !== "string" || !description.trim() ||
+      typeof scope !== "string" || !scope.trim()) {
+    return response.status(400).json({ message: "Description and scope are required." });
+  }
+  if (!["number", "string"].includes(typeof bountyAmount) ||
+      String(bountyAmount).trim() === "" ||
+      !Number.isFinite(Number(bountyAmount)) || Number(bountyAmount) < 0) {
+    return response.status(400).json({ message: "Bounty must be a non-negative number." });
+  }
+  if (!/^[a-f\d]{24}$/i.test(request.params.projectId)) {
+    return response.status(400).json({ message: "Invalid project ID." });
+  }
+
+  try {
+    const project = await Project.findOneAndUpdate(
+      { _id: request.params.projectId, owner: request.user._id },
+      { $set: { description: description.trim(), scope: scope.trim(), bountyAmount: Number(bountyAmount) } },
+      { new: true, runValidators: true },
+    );
+    if (!project) {
+      return response.status(404).json({ message: "Project not found or you do not own it." });
+    }
+    return response.json({ project: projectResponse(project) });
+  } catch (error) {
+    console.error("Project update failed:", error.message);
+    return response.status(500).json({ message: "Could not update project." });
+  }
+});
+
 router.get("/:projectId", async (request, response) => {
   try {
     const project = await Project.findById(request.params.projectId);
@@ -93,7 +124,7 @@ router.get("/:projectId", async (request, response) => {
     const isOwner = project.owner.toString() === request.user._id.toString();
     return response.json({
       project: projectResponse(project),
-      permissions: { canSubmit: !isOwner, canReview: isOwner },
+      permissions: { canSubmit: !isOwner, canReview: isOwner, canEdit: isOwner },
     });
   } catch (error) {
     console.error("Project details failed:", error.message);

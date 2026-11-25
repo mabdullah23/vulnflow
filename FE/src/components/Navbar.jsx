@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Notifications from "./Notifications.jsx";
 
 const links = [
   { id: "home", label: "Home" },
@@ -17,35 +18,41 @@ function Navbar({ activePage, onNavigate, onLogout }) {
   }
 
   return (
-    <nav className="navbar">
-      <button className="brand" type="button" onClick={() => navigate("home")}>
-        VulnFlow
-      </button>
-      <button
-        className="menu-toggle"
-        type="button"
-        aria-label="Toggle navigation"
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        ☰
-      </button>
-      <div className={`nav-links ${isOpen ? "nav-links-open" : ""}`}>
-        {links.map((link) => (
-          <button
-            className={`nav-link ${activePage === link.id ? "nav-link-active" : ""}`}
-            key={link.id}
-            type="button"
-            onClick={() => navigate(link.id)}
-          >
-            {link.label}
-          </button>
-        ))}
-        <button className="nav-logout" type="button" onClick={onLogout}>
-          Log out
+    <header className="site-header">
+      <nav className="navbar" aria-label="Main navigation">
+        <button className="brand" type="button" onClick={() => navigate("home")}>
+          <span className="brand-mark" aria-hidden="true">[v]</span>
+          VulnFlow
         </button>
-      </div>
-    </nav>
+        <button
+          className="menu-toggle"
+          type="button"
+          aria-label="Toggle navigation"
+          aria-expanded={isOpen}
+          aria-controls="main-navigation"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? "Close" : "Menu"}
+        </button>
+        <div id="main-navigation" className={`nav-links ${isOpen ? "nav-links-open" : ""}`}>
+          {links.map((link) => (
+            <button
+              className={`nav-link ${activePage === link.id ? "nav-link-active" : ""}`}
+              key={link.id}
+              type="button"
+              aria-current={activePage === link.id ? "page" : undefined}
+              onClick={() => navigate(link.id)}
+            >
+              {link.label}
+            </button>
+          ))}
+          <button className="nav-logout" type="button" onClick={onLogout}>
+            Log out
+          </button>
+        </div>
+        <Notifications />
+      </nav>
+    </header>
   );
 }
 

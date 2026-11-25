@@ -77,7 +77,7 @@ router.post("/login", async (request, response) => {
 
   try {
     const user = await User.findOne({ email: email.trim().toLowerCase() });
-    const passwordMatches = user
+    const passwordMatches = user?.password
       ? await bcrypt.compare(password, user.password)
       : false;
 

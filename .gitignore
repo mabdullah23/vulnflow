@@ -155,3 +155,7 @@ vite.config.ts.timestamp-*
 
 # Frontend build output
 FE/dist/
+
+# Local uploaded files
+BE/uploads/**
+!BE/uploads/.gitkeep

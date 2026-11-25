@@ -1,5 +1,21 @@
 import mongoose from "mongoose";
 
+export const reportTransitions = {
+  submitted: ["under_review"],
+  under_review: ["accepted", "rejected"],
+  accepted: ["resolved"],
+  rejected: ["closed"],
+  resolved: ["closed"],
+  closed: [],
+};
+
+// Keep reports saved before the lifecycle change usable without a migration.
+export function reportStatus(status) {
+  if (status === "pending") return "submitted";
+  if (status === "approved") return "accepted";
+  return status;
+}
+
 const submissionSchema = new mongoose.Schema(
   {
     project: {
@@ -31,8 +47,8 @@ const submissionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
+      enum: Object.keys(reportTransitions),
+      default: "submitted",
       index: true,
     },
     videoUrl: {

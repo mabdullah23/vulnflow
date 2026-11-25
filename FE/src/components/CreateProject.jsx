@@ -34,7 +34,7 @@ function CreateProject({ onCreated, onCancel }) {
       const data = await authRequest("/api/projects", {
         method: "POST",
         body: JSON.stringify(form),
-        token: localStorage.getItem(tokenKey),
+        token: sessionStorage.getItem(tokenKey),
       });
       onCreated(data.project);
     } catch (requestError) {
@@ -46,6 +46,7 @@ function CreateProject({ onCreated, onCancel }) {
 
   return (
     <section className="page-card">
+      <p className="page-path">~/ projects / new</p>
       <div className="page-heading">
         <div>
           <h1>Create Security Program</h1>
