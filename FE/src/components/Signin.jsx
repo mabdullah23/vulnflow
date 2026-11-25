@@ -20,7 +20,7 @@ function Signin({ onAuthenticated, onSwitch }) {
         method: "POST",
         body: JSON.stringify(form),
       });
-      localStorage.setItem(tokenKey, data.token);
+      sessionStorage.setItem(tokenKey, data.token);
       onAuthenticated(data.user);
     } catch (requestError) {
       setError(requestError.message);

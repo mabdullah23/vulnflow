@@ -17,7 +17,9 @@ function App() {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem(tokenKey);
+    // Retire the old shared token; each tab now has its own login.
+    localStorage.removeItem(tokenKey);
+    const token = sessionStorage.getItem(tokenKey);
 
     if (!token) {
       setCheckingAuth(false);
@@ -26,12 +28,12 @@ function App() {
 
     authRequest("/api/auth/me", { token })
       .then((data) => setUser(data.user))
-      .catch(() => localStorage.removeItem(tokenKey))
+      .catch(() => sessionStorage.removeItem(tokenKey))
       .finally(() => setCheckingAuth(false));
   }, []);
 
   function logout() {
-    localStorage.removeItem(tokenKey);
+    sessionStorage.removeItem(tokenKey);
     setUser(null);
     setPage("login");
     setActivePage("home");

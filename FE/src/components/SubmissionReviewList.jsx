@@ -23,7 +23,7 @@ function SubmissionReviewList({ projectId }) {
 
   function loadSubmissions() {
     authRequest(`/api/submissions/project/${projectId}`, {
-      token: localStorage.getItem(tokenKey),
+      token: sessionStorage.getItem(tokenKey),
     })
       .then((data) => setSubmissions(data.submissions))
       .catch((requestError) => setError(requestError.message));
@@ -40,7 +40,7 @@ function SubmissionReviewList({ projectId }) {
       const data = await authRequest(`/api/submissions/${id}/review`, {
         method: "PATCH",
         body: JSON.stringify({ status }),
-        token: localStorage.getItem(tokenKey),
+        token: sessionStorage.getItem(tokenKey),
       });
       setSubmissions((items) => items.map((item) => item.id === id
         ? { ...data.submission, bugHunter: item.bugHunter } : item));

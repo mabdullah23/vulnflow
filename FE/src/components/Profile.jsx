@@ -24,7 +24,7 @@ function Profile({ user, onUpdated }) {
       const data = await authRequest("/api/profile", {
         method: "PATCH",
         body: formData,
-        token: localStorage.getItem(tokenKey),
+        token: sessionStorage.getItem(tokenKey),
       });
       onUpdated(data.user);
       setImage(null);

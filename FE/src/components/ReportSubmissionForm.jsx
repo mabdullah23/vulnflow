@@ -31,7 +31,7 @@ function ReportSubmissionForm({ projectId, onSubmitted }) {
       await authRequest(`/api/submissions/project/${projectId}`, {
         method: "POST",
         body,
-        token: localStorage.getItem(tokenKey),
+        token: sessionStorage.getItem(tokenKey),
       });
       onSubmitted();
       setForm({ title: "", description: "", severity: "medium" });

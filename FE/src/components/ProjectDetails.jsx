@@ -11,7 +11,7 @@ function ProjectDetails({ projectId, onBack }) {
 
   useEffect(() => {
     authRequest(`/api/projects/${projectId}`, {
-      token: localStorage.getItem(tokenKey),
+      token: sessionStorage.getItem(tokenKey),
     })
       .then(setDetails)
       .catch((requestError) => setError(requestError.message));

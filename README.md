@@ -24,6 +24,9 @@ Open two terminals from the repository root:
 cd BE
 npm.cmd install
 npm.cmd run dev
+
+if not working
+node --input-type=module -e "import dns from 'node:dns'; dns.setServers(['1.1.1.1','8.8.8.8']); await import('./src/server.js');"
 ```
 
 ```powershell
@@ -36,11 +39,11 @@ The backend connects to MongoDB before starting. The React page at `http://local
 
 ## Authentication
 
-Email/password signup and login use the Express API and MongoDB. Signup stores a bcrypt password hash in the user document. Login verifies that hash and returns an app JWT. The browser stores only the JWT in localStorage (`vulnflow_token`); passwords are not saved in browser storage. Logout removes the token.
+Email/password signup and login use the Express API and MongoDB. Signup stores a bcrypt password hash in the user document. Login verifies that hash and returns an app JWT. The browser stores only the JWT in per-tab sessionStorage (`vulnflow_token`); passwords are not saved in browser storage. Separate tabs can log into different accounts without replacing each other's token. Reloading preserves that tab's login; closing the tab ends its session. Logout affects only the current tab. The old shared localStorage token is removed on startup; sign in again after updating.
 
 Accounts created with the original email/password login continue to work with their existing MongoDB user IDs, projects, and reports. Accounts created exclusively through the removed external provider have no local password hash and cannot use password login until a password is securely established. No database records are deleted by this change.
 
-Set `MONGODB_URI` and `JWT_SECRET` in `BE/.env`. Run `npm.cmd test` in `BE` for authentication, upload, and AI assistant checks.
+Set `MONGODB_URI` and `JWT_SECRET` in `BE/.env`.
 
 ## AI description assistant
 

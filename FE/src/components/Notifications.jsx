@@ -11,7 +11,7 @@ function Notifications() {
 
   async function load() {
     try {
-      const data = await authRequest("/api/notifications", { token: localStorage.getItem(tokenKey) });
+      const data = await authRequest("/api/notifications", { token: sessionStorage.getItem(tokenKey) });
       setItems(data.notifications);
       setUnreadCount(data.unreadCount);
       setError("");
@@ -31,7 +31,7 @@ function Notifications() {
   async function markRead() {
     setMarking(true);
     try {
-      await authRequest("/api/notifications/read", { method: "PATCH", token: localStorage.getItem(tokenKey) });
+      await authRequest("/api/notifications/read", { method: "PATCH", token: sessionStorage.getItem(tokenKey) });
       await load();
     } catch (requestError) {
       setError(requestError.message);

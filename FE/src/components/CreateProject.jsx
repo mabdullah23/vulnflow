@@ -34,7 +34,7 @@ function CreateProject({ onCreated, onCancel }) {
       const data = await authRequest("/api/projects", {
         method: "POST",
         body: JSON.stringify(form),
-        token: localStorage.getItem(tokenKey),
+        token: sessionStorage.getItem(tokenKey),
       });
       onCreated(data.project);
     } catch (requestError) {

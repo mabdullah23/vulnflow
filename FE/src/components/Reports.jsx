@@ -14,7 +14,7 @@ function Reports() {
 
   useEffect(() => {
     authRequest("/api/submissions/mine", {
-      token: localStorage.getItem(tokenKey),
+      token: sessionStorage.getItem(tokenKey),
     })
       .then((data) => setReports(data.submissions))
       .catch((requestError) => setError(requestError.message));

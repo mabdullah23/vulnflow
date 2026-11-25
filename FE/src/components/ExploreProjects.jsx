@@ -13,7 +13,7 @@ function ExploreProjects() {
 
   useEffect(() => {
     authRequest("/api/projects/explore", {
-      token: localStorage.getItem(tokenKey),
+      token: sessionStorage.getItem(tokenKey),
     })
       .then((data) => setProjects(data.projects))
       .catch((requestError) => setError(requestError.message));

@@ -22,7 +22,7 @@ function EditProject({ project, onSaved, onCancel }) {
       const data = await authRequest(`/api/projects/${project.id}`, {
         method: "PATCH",
         body: JSON.stringify(form),
-        token: localStorage.getItem(tokenKey),
+        token: sessionStorage.getItem(tokenKey),
       });
       onSaved(data.project);
     } catch (requestError) {

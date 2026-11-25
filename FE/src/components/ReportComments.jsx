@@ -13,7 +13,7 @@ function ReportComments({ submissionId }) {
     setLoading(true);
     setError("");
     try {
-      const data = await authRequest(path, { token: localStorage.getItem(tokenKey) });
+      const data = await authRequest(path, { token: sessionStorage.getItem(tokenKey) });
       setComments(data.comments);
     } catch (requestError) {
       setError(requestError.message);
@@ -30,7 +30,7 @@ function ReportComments({ submissionId }) {
     setError("");
     try {
       await authRequest(path, {
-        method: "POST", body: JSON.stringify({ text }), token: localStorage.getItem(tokenKey),
+        method: "POST", body: JSON.stringify({ text }), token: sessionStorage.getItem(tokenKey),
       });
       setText("");
       await loadComments();

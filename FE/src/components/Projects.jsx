@@ -15,7 +15,7 @@ function Projects() {
 
   function loadProjects() {
     authRequest("/api/projects/mine", {
-      token: localStorage.getItem(tokenKey),
+      token: sessionStorage.getItem(tokenKey),
     })
       .then((data) => setProjects(data.projects))
       .catch((requestError) => setError(requestError.message));
